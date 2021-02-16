@@ -1,15 +1,13 @@
+import Dashboard from 'components/Layout/Dashboard/Dashboard';
 import Toolbar from 'components/Layout/Toolbar/Toolbar';
-import React from 'react';
 
-const Layout = () => {
-  return (
-    <div>
-      <Toolbar />
-      <main>
-        <div>main</div>
-      </main>
-    </div>
-  )
-}
+const Layout = () => (
+  <div>
+    <Toolbar />
+    <main>
+      <Dashboard />
+    </main>
+  </div>
+);
 
-export default Layout
+export default Layout;

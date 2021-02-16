@@ -1,9 +1,7 @@
-const Toolbar = () => {
-  return (
-    <div>
-      Toolbar
-    </div>
-  )
-}
+const Toolbar = () => (
+  <div>
+    Toolbar
+  </div>
+);
 
-export default Toolbar
+export default Toolbar;
