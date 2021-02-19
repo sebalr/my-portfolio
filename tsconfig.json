@@ -21,6 +21,10 @@
     "jsx": "react-jsx",
     "baseUrl": "./src"
   },
+  "quotemark": [
+    true,
+    "single",
+  ],
   "include": [
     "src"
   ]
