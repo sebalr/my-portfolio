@@ -1,7 +1,8 @@
 {
     "env": {
         "browser": true,
-        "es2021": true
+        "es2021": true,
+        "jest": true
     },
     "extends": [
         "plugin:react/recommended",
@@ -22,6 +23,12 @@
         "import"
     ],
     "rules": {
+        "max-len": [
+            "error",
+            {
+                "code": 140
+            }
+        ],
         "arrow-parens": [
             "error",
             "as-needed"
@@ -43,7 +50,15 @@
                 ]
             }
         ], // also want to use with ".tsx"
-        "react/prop-types": "off" // Is this incompatible with TS props type?
+        "react/prop-types": "off", // Is this incompatible with TS props type?
+        "padded-blocks": [
+            2,
+            {
+                "classes": "always",
+                "blocks": "never",
+                "switches": "never"
+            }
+        ]
     },
     "settings": {
         "import/parsers": {
