@@ -9,10 +9,20 @@ interface ISummaryProps {
 const Summary = (props: ISummaryProps) => {
   const { investments } = props;
   const graphData = parseDashboardData(investments);
+  let chart = null;
+
+  if (investments.length > 0) {
+    chart = (
+      <Pie
+        data={graphData}
+      />
+    );
+  }
+
   return (
     <>
       <h3>Inversiones</h3>
-      <Pie data={graphData} />
+      {chart}
     </>
   );
 };

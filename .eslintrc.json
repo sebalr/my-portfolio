@@ -58,6 +58,12 @@
                 "blocks": "never",
                 "switches": "never"
             }
+        ],
+        "object-curly-newline": [
+            "error",
+            {
+                "multiline": true
+            }
         ]
     },
     "settings": {

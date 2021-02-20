@@ -1,5 +1,6 @@
 export interface IAppState {
-  dashboard: IDashboardState
+  dashboard: IDashboardState,
+  addDialogOn: boolean,
 }
 
 export interface IDashboardState {

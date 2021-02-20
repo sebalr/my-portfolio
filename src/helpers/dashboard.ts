@@ -7,7 +7,10 @@ const getColors = (length: number) => {
   return new Array(length).map(() => scale(length).toString());
 };
 
-const parseDashboardData = (investments: Array<IInvestment>): IPieChartData => {
+const parseDashboardData = (investments: Array<IInvestment>): IPieChartData | null => {
+  if (investments.length <= 0) {
+    return null;
+  }
   const backgroundColor = getColors(investments.length);
   const labels: string[] = [];
   const data: number[] = [];
