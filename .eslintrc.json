@@ -23,6 +23,7 @@
         "import"
     ],
     "rules": {
+        "no-unused-vars": "warn",
         "max-len": [
             "error",
             {

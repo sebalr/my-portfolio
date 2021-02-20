@@ -7,9 +7,7 @@ class Dashboard extends Component<IDashboardState, IDashboardState> {
 
   constructor(props: IDashboardState) {
     super(props);
-    this.state = {
-      investments: [],
-    };
+    this.state = { investments: [] };
   }
 
   componentDidMount() {

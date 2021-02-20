@@ -7,9 +7,7 @@ class InvestmentsDatabase extends Dexie {
 
   constructor(databaseName: string) {
     super(databaseName);
-    this.version(1).stores({
-      investments: '++id,date',
-    });
+    this.version(1).stores({ investments: '++id,date' });
     this.investments = this.table('investments');
   }
 
