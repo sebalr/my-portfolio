@@ -26,19 +26,26 @@ interface IAddDialogState {
 }
 
 const AddInvestmentDialog = (props: IDialogProps) => {
-  const { addInvestment } = useContext(DashboardContext);
-
-  const [state, setstate] = useState<IAddDialogState>({
+  const emptyModal: IAddDialogState = {
+    amount: '',
     date: new Date(),
     asset: null,
-    amount: '',
     newAsset: false,
     newAssetName: '',
     newAssetAbbreviation: '',
-  });
+  };
+
+  const { addInvestment } = useContext(DashboardContext);
+
+  const [state, setstate] = useState<IAddDialogState>(emptyModal);
 
   const { open, close } = props;
   const { amount, date, asset, newAsset, newAssetAbbreviation, newAssetName } = state;
+
+  const closeHandler = () => {
+    setstate(emptyModal);
+    close();
+  };
 
   const amountChangeHandler = ($event: ChangeEvent<HTMLInputElement>) => {
     setstate({ ...state, amount: $event.target.valueAsNumber });
@@ -85,11 +92,12 @@ const AddInvestmentDialog = (props: IDialogProps) => {
         date: state.date,
       });
     }
+    setstate(emptyModal);
     close();
   };
 
   return (
-    <Dialog open={open} onClose={close} aria-labelledby="form-dialog-title">
+    <Dialog open={open} onClose={closeHandler} aria-labelledby="form-dialog-title">
       <form onSubmit={saveInvestmentHandler}>
         <DialogTitle>Add asset</DialogTitle>
         <DialogContent>
@@ -135,7 +143,7 @@ const AddInvestmentDialog = (props: IDialogProps) => {
           />
         </DialogContent>
         <DialogActions>
-          <Button onClick={close} color="primary">
+          <Button onClick={closeHandler} color="primary">
             Cancel
           </Button>
           <Button type="submit" color="primary">
