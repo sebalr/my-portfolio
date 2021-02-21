@@ -11,19 +11,20 @@ import { ChangeEvent, useState } from 'react';
 
 interface IDialogProps {
   open: boolean;
-  close: () => void
+  close: () => void;
 }
 
 interface IAddDialogState {
-  amount?: number,
+  amount: number | '',
   date: Date,
-  asset: any
+  asset: any,
 }
 
 const AddInvestmentDialog = (props: IDialogProps) => {
   const [state, setstate] = useState<IAddDialogState>({
     date: new Date(),
     asset: null,
+    amount: '',
   });
 
   const { open, close } = props;
@@ -38,6 +39,12 @@ const AddInvestmentDialog = (props: IDialogProps) => {
       setstate({ ...state, date: newDate });
     }
   };
+
+  const saveHandler = () => {
+    console.log(state);
+    close();
+  };
+
   return (
     <Dialog open={open} onClose={close} aria-labelledby="form-dialog-title">
       <DialogTitle>Add asset</DialogTitle>
@@ -45,30 +52,27 @@ const AddInvestmentDialog = (props: IDialogProps) => {
         <DialogContentText>
           Add new asset
         </DialogContentText>
-        <TextField
-          autoFocus
-          margin="dense"
-          id="name"
-          label="Email Address"
-          type="email"
-          fullWidth
-        />
         <div>
+          <DatePicker
+            label="Date"
+            value={date}
+            change={dateChangeHandler}
+          />
           <AdornmentInput
             type="number"
+            fullWidth
             label="Amount"
             adornment="$"
             value={amount}
             change={amountChangeHandler}
           />
-          <DatePicker label="Date" value={date} change={dateChangeHandler} />
         </div>
       </DialogContent>
       <DialogActions>
         <Button onClick={close} color="primary">
           Cancel
         </Button>
-        <Button onClick={close} color="primary">
+        <Button onClick={saveHandler} color="primary">
           Save
         </Button>
       </DialogActions>

@@ -44,7 +44,6 @@ const Layout = () => {
     <div>
       <Toolbar />
       <MuiPickersUtilsProvider utils={DateFnsUtils}>
-
         <Container maxWidth="md">
           <main>
             <AddInvestmentDialog open={layoutState.addDialogOn} close={addCloseHandler} />

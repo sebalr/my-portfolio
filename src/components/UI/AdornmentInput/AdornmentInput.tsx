@@ -4,19 +4,20 @@ import FormControl from '@material-ui/core/FormControl';
 import Input from '@material-ui/core/Input';
 import InputLabel from '@material-ui/core/InputLabel';
 
-export interface IAdornmentInputProps {
+interface IAdornmentInputProps {
   label: string;
   type: string;
-  value?: string | number;
-  adornment: string | ReactNode
+  value: string | number | undefined;
+  adornment: string | ReactNode;
+  fullWidth: boolean | undefined;
   /* eslint-disable-next-line */
   change: (event: ChangeEvent<HTMLInputElement>) => void
 }
 
 const AdornmentInput = (props: IAdornmentInputProps) => {
-  const { type, label, value, adornment, change: handleChange } = props;
+  const { type, label, value, adornment, change: handleChange, fullWidth } = props;
   return (
-    <FormControl>
+    <FormControl fullWidth={fullWidth}>
       <InputLabel htmlFor="asset-amount">{label}</InputLabel>
       <Input
         type={type}

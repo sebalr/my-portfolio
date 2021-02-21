@@ -12,6 +12,7 @@ const DatePicker = (props: IDatePickerProps) => {
   return (
     <div>
       <KeyboardDatePicker
+        autoOk
         disableToolbar
         variant="inline"
         format="dd/MM/yyyy"
