@@ -82,9 +82,8 @@ const AddInvestmentDialog = (props: IDialogProps) => {
         <DialogContentText>
           Add new asset
         </DialogContentText>
-        <div className="flex-row">
+        <div className="flex-row form-row">
           <TextField
-            className="m8"
             disabled={!newAsset}
             value={newAssetName}
             label="Name"
@@ -92,7 +91,6 @@ const AddInvestmentDialog = (props: IDialogProps) => {
             onChange={newAssetNameChangeHandler}
           />
           <TextField
-            className="m8"
             disabled={!newAsset}
             value={newAssetAbbreviation}
             label="Abbreviation"

@@ -19,6 +19,11 @@ code {
   justify-content: space-between;
 }
 
-:global(.m8) {
-  margin: 8px;
+.form-row > * {
+  margin-right: 8px!important;
 }
+
+.form-row > *:last-child {
+  margin-right: 0px!important;
+}
+
