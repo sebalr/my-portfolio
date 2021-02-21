@@ -51,6 +51,7 @@
                 ]
             }
         ], // also want to use with ".tsx"
+        "react/require-default-props": "off",
         "react/prop-types": "off", // Is this incompatible with TS props type?
         "padded-blocks": [
             2,

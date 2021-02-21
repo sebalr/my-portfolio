@@ -1,7 +1,7 @@
 import { ChangeEvent, ReactNode } from 'react';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import FormControl from '@material-ui/core/FormControl';
-import Input from '@material-ui/core/Input';
+import FilledInput from '@material-ui/core/FilledInput';
 import InputLabel from '@material-ui/core/InputLabel';
 
 interface IAdornmentInputProps {
@@ -17,9 +17,13 @@ interface IAdornmentInputProps {
 const AdornmentInput = (props: IAdornmentInputProps) => {
   const { type, label, value, adornment, change: handleChange, fullWidth } = props;
   return (
-    <FormControl fullWidth={fullWidth}>
+    <FormControl
+      margin="normal"
+      variant="filled"
+      fullWidth={fullWidth}
+    >
       <InputLabel htmlFor="asset-amount">{label}</InputLabel>
-      <Input
+      <FilledInput
         type={type}
         id="asset-amount"
         value={value}
