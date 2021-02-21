@@ -8,7 +8,8 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import AdornmentInput from 'components/UI/AdornmentInput/AdornmentInput';
 import DatePicker from 'components/UI/DatePicker/DatePicker';
 import LabeledCheckbox from 'components/UI/Checkbox/LabeledCheckbox';
-import { ChangeEvent, useState } from 'react';
+import { FormEvent, ChangeEvent, useState, useContext } from 'react';
+import { DashboardContext } from 'context/DashboardContext';
 
 interface IDialogProps {
   open: boolean;
@@ -25,6 +26,8 @@ interface IAddDialogState {
 }
 
 const AddInvestmentDialog = (props: IDialogProps) => {
+  const { addInvestment } = useContext(DashboardContext);
+
   const [state, setstate] = useState<IAddDialogState>({
     date: new Date(),
     asset: null,
@@ -70,64 +73,76 @@ const AddInvestmentDialog = (props: IDialogProps) => {
     });
   };
 
-  const saveHandler = () => {
-    console.log(state);
+  const saveInvestmentHandler = (event: FormEvent) => {
+    event.preventDefault();
+    if (addInvestment) {
+      addInvestment({
+        asset: {
+          name: state.newAssetName,
+          abbreviation: state.newAssetAbbreviation,
+        },
+        ammount: state.amount as number,
+        date: state.date,
+      });
+    }
     close();
   };
 
   return (
     <Dialog open={open} onClose={close} aria-labelledby="form-dialog-title">
-      <DialogTitle>Add asset</DialogTitle>
-      <DialogContent>
-        <DialogContentText>
-          Add new asset
-        </DialogContentText>
-        <div className="flex-row form-row">
-          <TextField
-            disabled={!newAsset}
-            value={newAssetName}
-            label="Name"
-            variant="filled"
-            onChange={newAssetNameChangeHandler}
+      <form onSubmit={saveInvestmentHandler}>
+        <DialogTitle>Add asset</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Add new asset
+          </DialogContentText>
+          <div className="flex-row form-row">
+            <TextField
+              disabled={!newAsset}
+              value={newAssetName}
+              label="Name"
+              variant="filled"
+              onChange={newAssetNameChangeHandler}
+            />
+            <TextField
+              disabled={!newAsset}
+              value={newAssetAbbreviation}
+              label="Abbreviation"
+              variant="filled"
+              onChange={newAssetAbbreviationChangeHandler}
+            />
+            <LabeledCheckbox
+              value={newAsset}
+              label="New asset"
+              labelPlacement="top"
+              noWrap
+              change={newAssetHandler}
+            />
+          </div>
+          <DatePicker
+            fullWidth
+            label="Date"
+            value={date}
+            change={dateChangeHandler}
           />
-          <TextField
-            disabled={!newAsset}
-            value={newAssetAbbreviation}
-            label="Abbreviation"
-            variant="filled"
-            onChange={newAssetAbbreviationChangeHandler}
+          <AdornmentInput
+            type="number"
+            fullWidth
+            label="Amount"
+            adornment="$"
+            value={amount}
+            change={amountChangeHandler}
           />
-          <LabeledCheckbox
-            value={newAsset}
-            label="New asset"
-            labelPlacement="top"
-            noWrap
-            change={newAssetHandler}
-          />
-        </div>
-        <DatePicker
-          fullWidth
-          label="Date"
-          value={date}
-          change={dateChangeHandler}
-        />
-        <AdornmentInput
-          type="number"
-          fullWidth
-          label="Amount"
-          adornment="$"
-          value={amount}
-          change={amountChangeHandler}
-        />
-      </DialogContent>
-      <DialogActions>
-        <Button onClick={close} color="primary">
-          Cancel
-        </Button>
-        <Button onClick={saveHandler} color="primary">
-          Save
-        </Button>
-      </DialogActions>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={close} color="primary">
+            Cancel
+          </Button>
+          <Button type="submit" color="primary">
+            Save
+          </Button>
+        </DialogActions>
+      </form>
     </Dialog>
   );
 };

@@ -1,29 +1,31 @@
-import { useState, useEffect } from 'react';
-import Dashboard from 'components/Layout/Dashboard/Dashboard';
-import Toolbar from 'components/Layout/Toolbar/Toolbar';
+import { useState, useEffect, useContext } from 'react';
 import DateFnsUtils from '@date-io/date-fns';
 import { MuiPickersUtilsProvider } from '@material-ui/pickers';
-import { IAppState, IInvestment } from 'interfaces/state.interfaces';
-import AddInvestmentDialog from 'components/Layout/Dashboard/AddInvestmentDialog/AddInvestmentDialog';
-import InvestmentsDatabase from 'database/database';
-import Container from '@material-ui/core/Container';
 import Fab from '@material-ui/core/Fab';
 import AddIcon from '@material-ui/icons/Add';
+import Container from '@material-ui/core/Container';
+import { IAppState } from 'interfaces/state.interfaces';
+import Toolbar from 'components/Layout/Toolbar/Toolbar';
+import { DashboardContext } from 'context/DashboardContext';
+import Dashboard from 'components/Layout/Dashboard/Dashboard';
+import AddInvestmentDialog from 'components/Layout/Dashboard/AddInvestmentDialog/AddInvestmentDialog';
+import InvestmentsDatabase from 'database/database';
 
 import styles from './Layout.module.css';
 
 const Layout = () => {
-  const [layoutState, setState] = useState<IAppState>({
-    dashboard: { investments: [] as IInvestment[] },
-    addDialogOn: false,
-  });
+  const { updateInvestments } = useContext(DashboardContext);
+
+  const [layoutState, setState] = useState<IAppState>({ addDialogOn: false });
 
   useEffect(() => {
     const loadDataFromDb = async () => {
       try {
         await InvestmentsDatabase.open();
         const investments = await InvestmentsDatabase.investments.toArray();
-        setState({ dashboard: { investments }, addDialogOn: false });
+        if (updateInvestments) {
+          updateInvestments(investments);
+        }
       } catch (error) {
         console.log('db error', error);
       }
@@ -47,7 +49,7 @@ const Layout = () => {
         <Container maxWidth="md">
           <main>
             <AddInvestmentDialog open={layoutState.addDialogOn} close={addCloseHandler} />
-            <Dashboard investments={layoutState.dashboard.investments} />
+            <Dashboard />
             <Fab onClick={addClickHandler} className={styles.floating} color="primary" aria-label="add">
               <AddIcon />
             </Fab>
