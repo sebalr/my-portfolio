@@ -13,10 +13,16 @@ const Dashboard = () => {
     dashboard = (
       <>
         <Summary investments={state.investments} />
-        { state.investments.map(item => (<Investment key={item.id} investment={item} />))}
+        { state.investments.map(item => (
+          <Investment
+            key={item.id}
+            investment={item}
+          />
+        ))}
       </>
     );
   }
+
   return (
     <div>
       <h2>Dashboard</h2>

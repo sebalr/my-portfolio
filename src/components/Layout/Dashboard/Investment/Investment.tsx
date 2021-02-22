@@ -26,7 +26,7 @@ const Investment = (props: IInvestmentProps) => {
         <Button color="secondary" size="small">
           Decrease
         </Button>
-        <Button variant="contained" color="primary" size="small">
+        <Button color="primary" size="small">
           Increase
         </Button>
       </div>

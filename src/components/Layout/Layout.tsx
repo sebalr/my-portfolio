@@ -20,23 +20,17 @@ const Layout = () => {
 
   useEffect(() => {
     const loadDataFromDb = async () => {
-      try {
-        await InvestmentsDatabase.open();
-        const investments = await InvestmentsDatabase.investments.toArray();
-        updateInvestments!(investments);
-      } catch (error) {
-        console.log('db error', error);
-      }
+      const investments = await InvestmentsDatabase.investments.toArray();
+      updateInvestments!(investments);
     };
     loadDataFromDb();
-    return InvestmentsDatabase.close();
   }, []);
 
-  const addClickHandler = () => {
+  const addFABClickHandler = () => {
     setState({ ...layoutState, addDialogOn: true });
   };
 
-  const addCloseHandler = () => {
+  const addCloseDialogHandler = () => {
     setState({ ...layoutState, addDialogOn: false });
   };
 
@@ -46,9 +40,9 @@ const Layout = () => {
       <MuiPickersUtilsProvider utils={DateFnsUtils}>
         <Container maxWidth="md">
           <main>
-            <AddInvestmentDialog open={layoutState.addDialogOn} close={addCloseHandler} />
+            <AddInvestmentDialog open={layoutState.addDialogOn} close={addCloseDialogHandler} />
             <Dashboard />
-            <Fab onClick={addClickHandler} className={styles.floating} color="primary" aria-label="add">
+            <Fab onClick={addFABClickHandler} className={styles.floating} color="primary" aria-label="add">
               <AddIcon />
             </Fab>
           </main>

@@ -1,5 +1,6 @@
 import { IDashboardContext, IDashboardState, IInvestment } from 'interfaces/state.interfaces';
 import { createContext, useState } from 'react';
+import InvestmentsDatabase from 'database/database';
 
 export const DashboardContext = createContext<IDashboardContext>({ state: { investments: [] } });
 
@@ -7,8 +8,10 @@ const DashboardProvider = (props: any) => {
   const { children } = props;
   const [state, setState] = useState<IDashboardState>({ investments: [] });
 
-  const addInvestment = (investment: IInvestment) => {
-    setState(prevState => ({ ...prevState, investments: [...prevState.investments, investment] }));
+  const addInvestment = async (investment: IInvestment) => {
+    const id = await InvestmentsDatabase.investments.add(investment);
+    const updatedInvestment = { ...investment, id };
+    setState(prevState => ({ ...prevState, investments: [...prevState.investments, updatedInvestment] }));
   };
 
   const removeInvestment = (id: number) => {
