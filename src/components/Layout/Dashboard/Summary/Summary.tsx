@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import parseDashboardData from 'helpers/dashboard';
 import { IInvestment } from 'interfaces/state.interfaces';
 import { Pie } from 'react-chartjs-2';
@@ -27,4 +28,4 @@ const Summary = (props: ISummaryProps) => {
   );
 };
 
-export default Summary;
+export default memo(Summary);

@@ -23,9 +23,7 @@ const Layout = () => {
       try {
         await InvestmentsDatabase.open();
         const investments = await InvestmentsDatabase.investments.toArray();
-        if (updateInvestments) {
-          updateInvestments(investments);
-        }
+        updateInvestments!(investments);
       } catch (error) {
         console.log('db error', error);
       }

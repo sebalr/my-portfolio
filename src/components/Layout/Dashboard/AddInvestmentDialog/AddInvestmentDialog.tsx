@@ -7,10 +7,8 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import AdornmentInput from 'components/UI/AdornmentInput/AdornmentInput';
 import DatePicker from 'components/UI/DatePicker/DatePicker';
-import LabeledCheckbox from 'components/UI/Checkbox/LabeledCheckbox';
 import { FormEvent, ChangeEvent, useState, useContext } from 'react';
 import { DashboardContext } from 'context/DashboardContext';
-import { isNamedTupleMember } from 'typescript';
 
 interface IDialogProps {
   open: boolean;
@@ -65,16 +63,14 @@ const AddInvestmentDialog = (props: IDialogProps) => {
 
   const saveInvestmentHandler = (event: FormEvent) => {
     event.preventDefault();
-    if (addInvestment) {
-      addInvestment({
-        asset: {
-          name: state.name,
-          abbreviation: state.abbreviation,
-        },
-        ammount: state.amount as number,
-        date: state.date,
-      });
-    }
+    addInvestment!({
+      asset: {
+        name: state.name,
+        abbreviation: state.abbreviation,
+      },
+      ammount: state.amount as number,
+      date: state.date,
+    });
     setstate(emptyModal);
     close();
   };
