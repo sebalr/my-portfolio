@@ -10,6 +10,7 @@ import DatePicker from 'components/UI/DatePicker/DatePicker';
 import LabeledCheckbox from 'components/UI/Checkbox/LabeledCheckbox';
 import { FormEvent, ChangeEvent, useState, useContext } from 'react';
 import { DashboardContext } from 'context/DashboardContext';
+import { isNamedTupleMember } from 'typescript';
 
 interface IDialogProps {
   open: boolean;
@@ -20,9 +21,8 @@ interface IAddDialogState {
   amount: number | '';
   date: Date;
   asset: any;
-  newAsset: boolean;
-  newAssetName: string;
-  newAssetAbbreviation: string;
+  name: string;
+  abbreviation: string;
 }
 
 const AddInvestmentDialog = (props: IDialogProps) => {
@@ -30,9 +30,8 @@ const AddInvestmentDialog = (props: IDialogProps) => {
     amount: '',
     date: new Date(),
     asset: null,
-    newAsset: false,
-    newAssetName: '',
-    newAssetAbbreviation: '',
+    name: '',
+    abbreviation: '',
   };
 
   const { addInvestment } = useContext(DashboardContext);
@@ -40,7 +39,7 @@ const AddInvestmentDialog = (props: IDialogProps) => {
   const [state, setstate] = useState<IAddDialogState>(emptyModal);
 
   const { open, close } = props;
-  const { amount, date, asset, newAsset, newAssetAbbreviation, newAssetName } = state;
+  const { amount, date, asset, name, abbreviation } = state;
 
   const closeHandler = () => {
     setstate(emptyModal);
@@ -57,27 +56,11 @@ const AddInvestmentDialog = (props: IDialogProps) => {
     }
   };
   const newAssetNameChangeHandler = ($event: ChangeEvent<HTMLInputElement>) => {
-    setstate({ ...state, newAssetName: $event.target.value });
+    setstate({ ...state, name: $event.target.value });
   };
 
   const newAssetAbbreviationChangeHandler = ($event: ChangeEvent<HTMLInputElement>) => {
-    setstate({ ...state, newAssetAbbreviation: $event.target.value });
-  };
-
-  const newAssetHandler = () => {
-    setstate(prevState => {
-      const isNewAsset = !prevState.newAsset;
-      const updatedAssetName = newAsset ? '' : prevState.newAssetName;
-      const updatedAssetAbbreviation = newAsset ? '' : prevState.newAssetAbbreviation;
-      return (
-        {
-          ...prevState,
-          newAsset: isNewAsset,
-          newAssetName: updatedAssetName,
-          newAssetAbbreviation: updatedAssetAbbreviation,
-        }
-      );
-    });
+    setstate({ ...state, abbreviation: $event.target.value });
   };
 
   const saveInvestmentHandler = (event: FormEvent) => {
@@ -85,8 +68,8 @@ const AddInvestmentDialog = (props: IDialogProps) => {
     if (addInvestment) {
       addInvestment({
         asset: {
-          name: state.newAssetName,
-          abbreviation: state.newAssetAbbreviation,
+          name: state.name,
+          abbreviation: state.abbreviation,
         },
         ammount: state.amount as number,
         date: state.date,
@@ -106,25 +89,18 @@ const AddInvestmentDialog = (props: IDialogProps) => {
           </DialogContentText>
           <div className="flex-row form-row">
             <TextField
-              disabled={!newAsset}
-              value={newAssetName}
+              className="flex-grow"
+              value={name}
               label="Name"
               variant="filled"
               onChange={newAssetNameChangeHandler}
             />
             <TextField
-              disabled={!newAsset}
-              value={newAssetAbbreviation}
+              className="flex-grow"
+              value={abbreviation}
               label="Abbreviation"
               variant="filled"
               onChange={newAssetAbbreviationChangeHandler}
-            />
-            <LabeledCheckbox
-              value={newAsset}
-              label="New asset"
-              labelPlacement="top"
-              noWrap
-              change={newAssetHandler}
             />
           </div>
           <DatePicker

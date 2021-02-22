@@ -4,7 +4,7 @@ import chroma from 'chroma-js';
 
 const getColors = (length: number) => {
   const scale = chroma.scale([chroma.random(), chroma.random()]).domain([0, length]);
-  return new Array(length).map(() => scale(length).toString());
+  return new Array(length).fill(undefined).map((_, index) => scale(index).toString());
 };
 
 const parseDashboardData = (investments: Array<IInvestment>): IPieChartData | null => {

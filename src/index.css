@@ -12,6 +12,11 @@ code {
     monospace;
 }
 
+.flex-grow {
+  display: flex;
+  flex: 1;
+}
+
 .flex-row {
   display: flex;
   flex: 1;
