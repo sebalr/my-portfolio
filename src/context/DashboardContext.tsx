@@ -16,6 +16,7 @@ const DashboardProvider = (props: any) => {
 
   const removeInvestment = (id: number) => {
     setState(prevState => {
+      InvestmentsDatabase.investments.delete(id);
       const newArray = prevState.investments.filter(item => item.id !== id);
       return ({ ...prevState, investments: newArray });
     });
