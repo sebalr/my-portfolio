@@ -1,0 +1,10 @@
+.graphContainer {
+  position: relative;
+  margin: auto;
+}
+
+@media (min-width: 700px){
+  .graphContainer {
+    max-width: 550px;
+  }
+}

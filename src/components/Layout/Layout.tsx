@@ -8,7 +8,7 @@ import { IAppState } from 'interfaces/state.interfaces';
 import Toolbar from 'components/Layout/Toolbar/Toolbar';
 import { DashboardContext } from 'context/DashboardContext';
 import Dashboard from 'components/Layout/Dashboard/Dashboard';
-import AddInvestmentDialog from 'components/Layout/Dashboard/AddInvestmentDialog/AddInvestmentDialog';
+import AddInvestmentDialog from 'components/Layout/Dashboard/Dialogs/AddInvestmentDialog';
 import InvestmentsDatabase from 'database/database';
 
 import styles from './Layout.module.css';
