@@ -4,7 +4,7 @@ import { MuiPickersUtilsProvider } from '@material-ui/pickers';
 import Fab from '@material-ui/core/Fab';
 import AddIcon from '@material-ui/icons/Add';
 import Container from '@material-ui/core/Container';
-import { IAppState } from 'interfaces/state.interfaces';
+import { IAppState } from 'common/state.interfaces';
 import Toolbar from 'components/Layout/Toolbar/Toolbar';
 import { DashboardContext } from 'context/DashboardContext';
 import Dashboard from 'components/Layout/Dashboard/Dashboard';

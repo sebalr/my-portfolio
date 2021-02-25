@@ -1,6 +1,6 @@
 import { memo } from 'react';
 import parseDashboardData from 'helpers/dashboard';
-import { IInvestment } from 'interfaces/state.interfaces';
+import { IInvestment } from 'common/state.interfaces';
 import { Pie } from 'react-chartjs-2';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';

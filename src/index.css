@@ -13,6 +13,10 @@ code {
     monospace;
 }
 
+.no-wrap {
+  white-space: nowrap;
+}
+
 .flex-grow {
   display: flex;
   flex: 1;

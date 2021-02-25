@@ -1,5 +1,5 @@
-import { IPieChartData } from 'interfaces/graph.interfaces';
-import { IInvestment } from 'interfaces/state.interfaces';
+import { IPieChartData } from 'common/graph.interfaces';
+import { IInvestment } from 'common/state.interfaces';
 import chroma from 'chroma-js';
 
 const getColors = (length: number) => {
@@ -16,7 +16,7 @@ const parseDashboardData = (investments: Array<IInvestment>): IPieChartData | nu
   const data: number[] = [];
   investments.forEach(x => {
     labels.push(x.asset.abbreviation || x.asset.name);
-    data.push(x.ammount);
+    data.push(x.amount);
   });
   return {
     labels,

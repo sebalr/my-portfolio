@@ -1,5 +1,4 @@
 import Button from '@material-ui/core/Button';
-import TextField from '@material-ui/core/TextField';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
@@ -9,35 +8,31 @@ import AdornmentInput from 'components/UI/AdornmentInput/AdornmentInput';
 import DatePicker from 'components/UI/DatePicker/DatePicker';
 import { FormEvent, ChangeEvent, useState, useContext } from 'react';
 import { DashboardContext } from 'context/DashboardContext';
+import { IInvestment } from 'common/state.interfaces';
 
-interface IDialogProps {
+interface IUpdateDialogProps {
+  investment: IInvestment;
   open: boolean;
   close: () => void;
 }
 
-interface IAddDialogState {
+interface IUpdateDialogState {
   amount: number | '';
   date: Date;
-  asset: any;
-  name: string;
-  abbreviation: string;
 }
 
-const AddInvestmentDialog = (props: IDialogProps) => {
-  const emptyModal: IAddDialogState = {
+const UpdateInvestmentDialog = (props: IUpdateDialogProps) => {
+  const emptyModal: IUpdateDialogState = {
     amount: '',
     date: new Date(),
-    asset: null,
-    name: '',
-    abbreviation: '',
   };
 
-  const { addInvestment } = useContext(DashboardContext);
+  const { updateInvestment } = useContext(DashboardContext);
 
-  const [state, setstate] = useState<IAddDialogState>(emptyModal);
+  const [state, setstate] = useState<IUpdateDialogState>(emptyModal);
 
-  const { open, close } = props;
-  const { amount, date, asset, name, abbreviation } = state;
+  const { open, close, investment } = props;
+  const { amount, date } = state;
 
   const closeHandler = () => {
     setstate(emptyModal);
@@ -53,52 +48,25 @@ const AddInvestmentDialog = (props: IDialogProps) => {
       setstate({ ...state, date: newDate });
     }
   };
-  const newAssetNameChangeHandler = ($event: ChangeEvent<HTMLInputElement>) => {
-    setstate({ ...state, name: $event.target.value });
-  };
 
-  const newAssetAbbreviationChangeHandler = ($event: ChangeEvent<HTMLInputElement>) => {
-    setstate({ ...state, abbreviation: $event.target.value });
-  };
-
-  const saveInvestmentHandler = (event: FormEvent) => {
+  const updateInvestmentHandler = (event: FormEvent) => {
     event.preventDefault();
-    addInvestment!({
-      asset: {
-        name: state.name,
-        abbreviation: state.abbreviation,
-      },
-      amount: state.amount as number,
-      date: state.date,
-    });
+    updateInvestment!(investment, state.amount as number, state.date);
     setstate(emptyModal);
     close();
   };
 
+  const assetName = investment.asset.abbreviation ? `${investment.asset.name} (${investment.asset.abbreviation})` : investment.asset.name;
+
   return (
     <Dialog open={open} onClose={closeHandler} aria-labelledby="form-dialog-title">
-      <form onSubmit={saveInvestmentHandler}>
-        <DialogTitle>Add asset</DialogTitle>
+      <form onSubmit={updateInvestmentHandler}>
+        <DialogTitle>Update asset investment</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            Add new asset
+            Updating
+            {assetName}
           </DialogContentText>
-          <div className="flex-row form-row">
-            <TextField
-              className="flex-grow"
-              value={name}
-              label="Name"
-              variant="filled"
-              onChange={newAssetNameChangeHandler}
-            />
-            <TextField
-              className="flex-grow"
-              value={abbreviation}
-              label="Abbreviation"
-              variant="filled"
-              onChange={newAssetAbbreviationChangeHandler}
-            />
-          </div>
           <DatePicker
             fullWidth
             label="Date"
@@ -126,4 +94,4 @@ const AddInvestmentDialog = (props: IDialogProps) => {
     </Dialog>
   );
 };
-export default AddInvestmentDialog;
+export default UpdateInvestmentDialog;

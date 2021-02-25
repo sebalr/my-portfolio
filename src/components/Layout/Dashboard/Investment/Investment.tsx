@@ -1,5 +1,5 @@
 import { memo, useContext } from 'react';
-import { IInvestment } from 'interfaces/state.interfaces';
+import { IInvestment } from 'common/state.interfaces';
 import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
 import DeleteIcon from '@material-ui/icons/Delete';
@@ -9,14 +9,20 @@ import styles from './Investment.module.css';
 
 interface IInvestmentProps {
   investment: IInvestment;
+  /* eslint-disable-next-line */
+  update: (item: IInvestment) => void;
 }
 
 const Investment = (props: IInvestmentProps) => {
-  const { investment } = props;
+  const { investment, update } = props;
   const { removeInvestment } = useContext(DashboardContext);
 
   const removeInvestmentHandler = () => {
     removeInvestment!(investment.id!);
+  };
+
+  const openUpdateInvestmentHandler = () => {
+    update(investment);
   };
 
   return (
@@ -27,14 +33,21 @@ const Investment = (props: IInvestmentProps) => {
       <span>{investment.asset.name}</span>
       <strong>
         $
-        {investment.ammount.toLocaleString()}
+        {investment.amount.toLocaleString()}
       </strong>
-      <div>
+      <div className="flex-row no-wrap">
         <Button color="secondary" size="small">
           Decrease
         </Button>
         <Button color="primary" size="small">
           Increase
+        </Button>
+        <Button
+          color="primary"
+          size="small"
+          onClick={openUpdateInvestmentHandler}
+        >
+          Update
         </Button>
       </div>
     </div>
