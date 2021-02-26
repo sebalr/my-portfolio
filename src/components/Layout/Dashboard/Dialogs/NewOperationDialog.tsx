@@ -8,57 +8,67 @@ import AdornmentInput from 'components/UI/AdornmentInput/AdornmentInput';
 import DatePicker from 'components/UI/DatePicker/DatePicker';
 import { FormEvent, ChangeEvent, useState, useContext } from 'react';
 import { DashboardContext } from 'context/DashboardContext';
-import { IAsset, IInvestment, InvestmentOperation } from 'common/state.interfaces';
+import { IInvestment, IInvestmentOperation, InvestmentOperation } from 'common/state.interfaces';
 
 interface IOperationDialogProps {
+  investment: IInvestment;
   open: boolean;
+  operation?: InvestmentOperation;
   close: () => void;
 }
 
 interface IOperationDialogState {
   amount: number | '';
   amountBefore: number | '';
-  afterOperation: number | '';
+  amountAfter: number | '';
   date: Date;
-  asset: IAsset | null;
-  operation: InvestmentOperation;
 }
 
 const AddInvestmentDialog = (props: IOperationDialogProps) => {
   const emptyModal: IOperationDialogState = {
     amount: '',
     amountBefore: '',
-    afterOperation: '',
+    amountAfter: '',
     date: new Date(),
-    asset: null,
-    operation: InvestmentOperation.update,
   };
 
-  const { addInvestment } = useContext(DashboardContext);
+  const { newInvestmentOperation } = useContext(DashboardContext);
 
   const [state, setstate] = useState<IOperationDialogState>(emptyModal);
 
-  const { open, close } = props;
-  const { amount, date, asset, amountBefore, afterOperation, operation } = state;
+  const { investment, operation, open, close } = props;
+  const { amount, date, amountAfter, amountBefore } = state;
+
+  if (!operation) {
+    return null;
+  }
 
   const closeHandler = () => {
     setstate(emptyModal);
     close();
   };
 
+  const syncValues = (oldState: IOperationDialogState, newState: IOperationDialogState): IOperationDialogState => {
+    const auxState = { ...newState };
+    if (operation === InvestmentOperation.increase) {
+      auxState.amountAfter = Number(oldState.amountBefore) + Number(auxState.amount);
+    } else if (operation === InvestmentOperation.decrease) {
+      auxState.amountAfter = Number(oldState.amountBefore) - Number(auxState.amount);
+    }
+    return auxState;
+  };
+
   const amountChangeHandler = ($event: ChangeEvent<HTMLInputElement>) => {
     setstate(prevState => {
       const newState = { ...state, amount: $event.target.valueAsNumber };
-      if (prevState.amountBefore >= 0) {
-        if (operation === InvestmentOperation.increase) {
-          newState.afterOperation = Number(prevState.amountBefore) + newState.amount;
-        } else if (operation === InvestmentOperation.decrease) {
-          newState.afterOperation = Number(prevState.amountBefore) - newState.amount;
-        } else {
-          newState.afterOperation = newState.amount;
-        }
-      }
-      return newState;
+      return syncValues(prevState, newState);
+    });
+  };
+
+  const ammountBeforeChangeHandler = ($event: ChangeEvent<HTMLInputElement>) => {
+    setstate(prevState => {
+      const newState = { ...prevState, amountBefore: $event.target.valueAsNumber };
+      return syncValues(prevState, newState);
     });
   };
 
@@ -68,48 +78,32 @@ const AddInvestmentDialog = (props: IOperationDialogProps) => {
     }
   };
 
-  const ammountBeforeChangeHandler = ($event: ChangeEvent<HTMLInputElement>) => {
-    setstate(prevState => {
-      const newState = { ...state, amountBefore: $event.target.valueAsNumber };
-      if (prevState.amount >= 0) {
-        if (operation === InvestmentOperation.increase) {
-          newState.afterOperation = Number(prevState.amountBefore) + Number(newState.amount);
-        } else if (operation === InvestmentOperation.decrease) {
-          newState.afterOperation = Number(prevState.amountBefore) - Number(newState.amount);
-        } else {
-          newState.afterOperation = newState.amount;
-        }
-      }
-      return newState;
-    });
-  };
-
-  const saveInvestmentHandler = (event: FormEvent) => {
+  const newOperationHandler = (event: FormEvent) => {
     event.preventDefault();
-    addInvestment!({
-      id: 0,
-      asset: {
-        name: state?.asset?.name || '',
-        abbreviation: state?.asset?.abbreviation,
-      },
-      amount: state.amount as number,
-      date: state.date,
-    });
+    const newOperation: IInvestmentOperation = {
+      investmentId: investment.id!,
+      asset: investment.asset,
+      date,
+      amount: Number(amount),
+      amountBefore: Number(amountBefore),
+      amountAfter: Number(amountAfter),
+      operation: operation!,
+    };
+    newInvestmentOperation!(newOperation);
     setstate(emptyModal);
     close();
   };
 
-  let operationLabel = 'Deposit';
-  if (operation === InvestmentOperation.decrease) {
-    operationLabel = 'Whidraw';
-  } else if (operation === InvestmentOperation.update) {
-    operationLabel = 'Update total';
+  let operationLabel = 'ERROR!';
+  if (operation === InvestmentOperation.increase) {
+    operationLabel = 'Deposit';
+  } else if (operation === InvestmentOperation.decrease) {
+    operationLabel = 'Whitdraw';
   }
+
   return (
-
-
-    <Dialog open={open} onClose={closeHandler} aria-labelledby="form-dialog-title">
-      <form onSubmit={saveInvestmentHandler}>
+    <Dialog open={open} onClose={closeHandler}>
+      <form onSubmit={newOperationHandler}>
         <DialogTitle>New operation</DialogTitle>
         <DialogContent>
           <DialogContentText>
@@ -138,11 +132,19 @@ const AddInvestmentDialog = (props: IOperationDialogProps) => {
               value={amount}
               change={amountChangeHandler}
             />
-            <span>
-              Total after operation: $
-              {afterOperation.toLocaleString()}
-            </span>
           </div>
+          <span>
+            Total after operation: $
+            {
+              amountAfter.toLocaleString(
+                undefined,
+                {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                },
+              )
+            }
+          </span>
 
         </DialogContent>
         <DialogActions>

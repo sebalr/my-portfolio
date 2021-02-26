@@ -27,7 +27,7 @@ const DashboardProvider = (props: any) => {
   );
 
   // Update an existing investment with indicated operation
-  const updateInvestmentOpearation = async (operation: IInvestmentOperation) => {
+  const newInvestmentOperation = async (operation: IInvestmentOperation) => {
     await InvestmentsDatabase.transaction('rw', InvestmentsDatabase.investments, InvestmentsDatabase.operations, async () => {
       await InvestmentsDatabase.investments.update(
         operation.investmentId,
@@ -77,7 +77,7 @@ const DashboardProvider = (props: any) => {
       operation: InvestmentOperation.update,
     };
 
-    updateInvestmentOpearation(operation);
+    newInvestmentOperation(operation);
   };
 
   const removeInvestment = async (id: number) => {
@@ -93,7 +93,18 @@ const DashboardProvider = (props: any) => {
   };
 
   return (
-    <DashboardContext.Provider value={{ dashboardContext: state, addInvestment, removeInvestment, updateInvestments, updateInvestment }}>
+    <DashboardContext.Provider
+      value={
+        {
+          dashboardContext: state,
+          addInvestment,
+          removeInvestment,
+          updateInvestments,
+          updateInvestment,
+          newInvestmentOperation,
+        }
+      }
+    >
       {children}
     </DashboardContext.Provider>
   );

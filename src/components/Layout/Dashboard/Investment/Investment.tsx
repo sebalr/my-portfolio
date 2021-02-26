@@ -1,5 +1,5 @@
 import { memo, useContext } from 'react';
-import { IInvestment } from 'common/state.interfaces';
+import { IInvestment, InvestmentOperation } from 'common/state.interfaces';
 import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
 import DeleteIcon from '@material-ui/icons/Delete';
@@ -11,10 +11,12 @@ interface IInvestmentProps {
   investment: IInvestment;
   /* eslint-disable-next-line */
   update: (item: IInvestment) => void;
+  /* eslint-disable-next-line */
+  newOperation: (item: IInvestment, operation: InvestmentOperation) => void;
 }
 
 const Investment = (props: IInvestmentProps) => {
-  const { investment, update } = props;
+  const { investment, update, newOperation } = props;
   const { removeInvestment } = useContext(DashboardContext);
 
   const removeInvestmentHandler = () => {
@@ -25,9 +27,20 @@ const Investment = (props: IInvestmentProps) => {
     update(investment);
   };
 
+  const openIncreaseOperationHandler = () => {
+    newOperation(investment, InvestmentOperation.increase);
+  };
+
+  const openDecreaseOperationHandler = () => {
+    newOperation(investment, InvestmentOperation.increase);
+  };
+
   return (
     <div className={styles.row}>
-      <IconButton color="secondary" onClick={removeInvestmentHandler}>
+      <IconButton
+        color="secondary"
+        onClick={removeInvestmentHandler}
+      >
         <DeleteIcon />
       </IconButton>
       <span>{investment.asset.name}</span>
@@ -36,10 +49,18 @@ const Investment = (props: IInvestmentProps) => {
         {investment.amount.toLocaleString()}
       </strong>
       <div className="flex-row no-wrap">
-        <Button color="secondary" size="small">
+        <Button
+          onClick={openDecreaseOperationHandler}
+          color="secondary"
+          size="small"
+        >
           Decrease
         </Button>
-        <Button color="primary" size="small">
+        <Button
+          onClick={openIncreaseOperationHandler}
+          color="primary"
+          size="small"
+        >
           Increase
         </Button>
         <Button

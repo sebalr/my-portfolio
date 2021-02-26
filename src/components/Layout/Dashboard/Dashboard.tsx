@@ -4,14 +4,16 @@ import Investment from 'components/Layout/Dashboard/Investment/Investment';
 import { DashboardContext } from 'context/DashboardContext';
 import Welcome from 'components/Layout/Dashboard/Welcome/Welcome';
 import UpdateInvestmentDialog from 'components/Layout/Dashboard/Dialogs/UpdateInvestmentDialog';
-import { IInvestment } from 'common/state.interfaces';
+import { IInvestment, InvestmentOperation } from 'common/state.interfaces';
 import AddInvestmentDialog from 'components/Layout/Dashboard/Dialogs/AddInvestmentDialog';
+import NewOperationDialog from 'components/Layout/Dashboard/Dialogs/NewOperationDialog';
 
 interface IDashboardState {
   newDialogOn: boolean;
   updateDialogOn: boolean;
   newOperationOn: boolean;
   selectedInvestment: IInvestment | null;
+  operation?: InvestmentOperation;
 }
 
 const Dashboard = () => {
@@ -26,15 +28,6 @@ const Dashboard = () => {
     },
   );
 
-  const openUpdateDialogHandler = (investment: IInvestment) => {
-    setstate({
-      newDialogOn: false,
-      updateDialogOn: true,
-      newOperationOn: false,
-      selectedInvestment: investment,
-    });
-  };
-
   const openNewDialogHandler = () => {
     setstate({
       newDialogOn: true,
@@ -44,11 +37,30 @@ const Dashboard = () => {
     });
   };
 
+  const openUpdateDialogHandler = (investment: IInvestment) => {
+    setstate({
+      newDialogOn: false,
+      updateDialogOn: true,
+      newOperationOn: false,
+      selectedInvestment: investment,
+    });
+  };
+
+  const openOperationDialogHandler = (investment: IInvestment, operation: InvestmentOperation) => {
+    setstate({
+      newDialogOn: false,
+      updateDialogOn: false,
+      newOperationOn: true,
+      selectedInvestment: investment,
+      operation,
+    });
+  };
+
   const closeDialogHandler = () => {
     setstate({ newDialogOn: false, updateDialogOn: false, newOperationOn: false, selectedInvestment: null });
   };
 
-  let dashboard = <Welcome />;
+  let dashboard = <Welcome openAddDialog={openNewDialogHandler} />;
 
   if (contextState.investments.length > 0) {
     dashboard = (
@@ -62,6 +74,7 @@ const Dashboard = () => {
             key={item.id}
             investment={item}
             update={openUpdateDialogHandler}
+            newOperation={openOperationDialogHandler}
           />
         ))}
       </>
@@ -70,10 +83,19 @@ const Dashboard = () => {
 
   const dialogs = state.selectedInvestment ? (
     <>
-      <AddInvestmentDialog open={state.newDialogOn} close={closeDialogHandler} />
+      <AddInvestmentDialog
+        open={state.newDialogOn}
+        close={closeDialogHandler}
+      />
       <UpdateInvestmentDialog
         open={state.updateDialogOn}
         investment={state.selectedInvestment!}
+        close={closeDialogHandler}
+      />
+      <NewOperationDialog
+        open={state.newOperationOn}
+        investment={state.selectedInvestment!}
+        operation={state.operation}
         close={closeDialogHandler}
       />
     </>

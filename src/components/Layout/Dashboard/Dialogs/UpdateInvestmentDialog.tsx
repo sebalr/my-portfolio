@@ -56,16 +56,21 @@ const UpdateInvestmentDialog = (props: IUpdateDialogProps) => {
     close();
   };
 
-  const assetName = investment.asset.abbreviation ? `${investment.asset.name} (${investment.asset.abbreviation})` : investment.asset.name;
+  const assetName = investment?.asset.abbreviation
+    ? `${investment?.asset.name} (${investment?.asset.abbreviation})`
+    : investment?.asset.name;
 
   return (
     <Dialog open={open} onClose={closeHandler} aria-labelledby="form-dialog-title">
       <form onSubmit={updateInvestmentHandler}>
-        <DialogTitle>Update asset investment</DialogTitle>
+        <DialogTitle>
+          Update
+          {assetName}
+        </DialogTitle>
         <DialogContent>
           <DialogContentText>
-            Updating
-            {assetName}
+            Current ammount:
+            {investment.amount}
           </DialogContentText>
           <DatePicker
             fullWidth
