@@ -8,7 +8,7 @@ import AdornmentInput from 'components/UI/AdornmentInput/AdornmentInput';
 import DatePicker from 'components/UI/DatePicker/DatePicker';
 import { FormEvent, ChangeEvent, useState, useContext } from 'react';
 import { DashboardContext } from 'context/DashboardContext';
-import { IAsset, IInvestment, InvestmnetOperation } from 'common/state.interfaces';
+import { IAsset, IInvestment, InvestmentOperation } from 'common/state.interfaces';
 
 interface IOperationDialogProps {
   open: boolean;
@@ -21,7 +21,7 @@ interface IOperationDialogState {
   afterOperation: number | '';
   date: Date;
   asset: IAsset | null;
-  operation: InvestmnetOperation;
+  operation: InvestmentOperation;
 }
 
 const AddInvestmentDialog = (props: IOperationDialogProps) => {
@@ -31,7 +31,7 @@ const AddInvestmentDialog = (props: IOperationDialogProps) => {
     afterOperation: '',
     date: new Date(),
     asset: null,
-    operation: InvestmnetOperation.update,
+    operation: InvestmentOperation.update,
   };
 
   const { addInvestment } = useContext(DashboardContext);
@@ -50,9 +50,9 @@ const AddInvestmentDialog = (props: IOperationDialogProps) => {
     setstate(prevState => {
       const newState = { ...state, amount: $event.target.valueAsNumber };
       if (prevState.amountBefore >= 0) {
-        if (operation === InvestmnetOperation.add) {
+        if (operation === InvestmentOperation.increase) {
           newState.afterOperation = Number(prevState.amountBefore) + newState.amount;
-        } else if (operation === InvestmnetOperation.remove) {
+        } else if (operation === InvestmentOperation.decrease) {
           newState.afterOperation = Number(prevState.amountBefore) - newState.amount;
         } else {
           newState.afterOperation = newState.amount;
@@ -72,9 +72,9 @@ const AddInvestmentDialog = (props: IOperationDialogProps) => {
     setstate(prevState => {
       const newState = { ...state, amountBefore: $event.target.valueAsNumber };
       if (prevState.amount >= 0) {
-        if (operation === InvestmnetOperation.add) {
+        if (operation === InvestmentOperation.increase) {
           newState.afterOperation = Number(prevState.amountBefore) + Number(newState.amount);
-        } else if (operation === InvestmnetOperation.remove) {
+        } else if (operation === InvestmentOperation.decrease) {
           newState.afterOperation = Number(prevState.amountBefore) - Number(newState.amount);
         } else {
           newState.afterOperation = newState.amount;
@@ -100,9 +100,9 @@ const AddInvestmentDialog = (props: IOperationDialogProps) => {
   };
 
   let operationLabel = 'Deposit';
-  if (operation === InvestmnetOperation.remove) {
+  if (operation === InvestmentOperation.decrease) {
     operationLabel = 'Whidraw';
-  } else if (operation === InvestmnetOperation.update) {
+  } else if (operation === InvestmentOperation.update) {
     operationLabel = 'Update total';
   }
   return (

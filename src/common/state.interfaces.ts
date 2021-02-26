@@ -1,6 +1,7 @@
-export enum InvestmnetOperation {
-  add = 1,
-  remove,
+export enum InvestmentOperation {
+  new = 1,
+  increase,
+  decrease,
   update
 }
 
@@ -32,9 +33,11 @@ export interface IInvestment {
 export interface IInvestmentOperation {
   investmentId: number;
   asset: IAsset;
-  amount: number;
-  operation: InvestmnetOperation;
   date: Date;
+  amount: number;
+  amountBefore: number;
+  amountAfter: number;
+  operation: InvestmentOperation;
 }
 
 export interface IAsset {
