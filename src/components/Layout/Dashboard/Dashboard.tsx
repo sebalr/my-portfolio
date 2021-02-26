@@ -5,8 +5,10 @@ import { DashboardContext } from 'context/DashboardContext';
 import Welcome from 'components/Layout/Dashboard/Welcome/Welcome';
 import UpdateInvestmentDialog from 'components/Layout/Dashboard/Dialogs/UpdateInvestmentDialog';
 import { IInvestment } from 'common/state.interfaces';
+import AddInvestmentDialog from 'components/Layout/Dashboard/Dialogs/AddInvestmentDialog';
 
 interface IDashboardState {
+  newDialogOn: boolean;
   updateDialogOn: boolean;
   newOperationOn: boolean;
   selectedInvestment: IInvestment | null;
@@ -17,6 +19,7 @@ const Dashboard = () => {
 
   const [state, setstate] = useState<IDashboardState>(
     {
+      newDialogOn: false,
       updateDialogOn: false,
       newOperationOn: false,
       selectedInvestment: null,
@@ -25,14 +28,24 @@ const Dashboard = () => {
 
   const openUpdateDialogHandler = (investment: IInvestment) => {
     setstate({
+      newDialogOn: false,
       updateDialogOn: true,
       newOperationOn: false,
       selectedInvestment: investment,
     });
   };
 
+  const openNewDialogHandler = () => {
+    setstate({
+      newDialogOn: true,
+      updateDialogOn: false,
+      newOperationOn: false,
+      selectedInvestment: null,
+    });
+  };
+
   const closeDialogHandler = () => {
-    setstate({ updateDialogOn: false, newOperationOn: false, selectedInvestment: null });
+    setstate({ newDialogOn: false, updateDialogOn: false, newOperationOn: false, selectedInvestment: null });
   };
 
   let dashboard = <Welcome />;
@@ -40,7 +53,10 @@ const Dashboard = () => {
   if (contextState.investments.length > 0) {
     dashboard = (
       <>
-        <Summary investments={contextState.investments} />
+        <Summary
+          openAddDialog={openNewDialogHandler}
+          investments={contextState.investments}
+        />
         { contextState.investments.map(item => (
           <Investment
             key={item.id}
@@ -52,18 +68,21 @@ const Dashboard = () => {
     );
   }
 
-  const dialog = state.selectedInvestment ? (
-    <UpdateInvestmentDialog
-      open={state.updateDialogOn}
-      investment={state.selectedInvestment!}
-      close={closeDialogHandler}
-    />
-  ) : null;
+  const dialogs = state.selectedInvestment ? (
+    <>
+      <AddInvestmentDialog open={state.newDialogOn} close={closeDialogHandler} />
+      <UpdateInvestmentDialog
+        open={state.updateDialogOn}
+        investment={state.selectedInvestment!}
+        close={closeDialogHandler}
+      />
+    </>
+  ) : <AddInvestmentDialog open={state.newDialogOn} close={closeDialogHandler} />;
 
   return (
     <div>
+      {dialogs}
       <h2>Dashboard</h2>
-      {dialog}
       {dashboard}
     </div>
   );
