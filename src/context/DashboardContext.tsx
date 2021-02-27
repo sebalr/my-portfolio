@@ -7,6 +7,8 @@ import {
 } from 'common/state.interfaces';
 import { createContext, useState } from 'react';
 import InvestmentsDatabase from 'database/database';
+import { importDB, exportDB, importInto, peakImportFile } from 'dexie-export-import';
+import download from 'downloadjs';
 
 export const DashboardContext = createContext<IDashboardContext>(
   {
@@ -92,6 +94,12 @@ const DashboardProvider = (props: any) => {
     setState(prevState => ({ ...prevState, investments }));
   };
 
+  const exportDb = async () => {
+    const blob = await exportDB(InvestmentsDatabase);
+    const name = `portfolio-export-${new Date().toISOString().slice(0, 10)}.json`;
+    download(blob, name, 'application/json');
+  };
+
   return (
     <DashboardContext.Provider
       value={
@@ -102,6 +110,7 @@ const DashboardProvider = (props: any) => {
           updateInvestments,
           updateInvestment,
           newInvestmentOperation,
+          exportDb,
         }
       }
     >

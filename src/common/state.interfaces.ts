@@ -22,6 +22,7 @@ export interface IDashboardContext {
   removeInvestment?: (id: number) => void;
   updateInvestment?: (investment: IInvestment, amount: number, date: Date) => void;
   newInvestmentOperation?: (operation: IInvestmentOperation) => void;
+  exportDb?: () => Promise<void>;
 }
 
 export interface IInvestment {

@@ -1,11 +1,13 @@
-import { useState, MouseEvent } from 'react';
+import { useState, MouseEvent, useContext } from 'react';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import IconButton from '@material-ui/core/IconButton';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
+import { DashboardContext } from 'context/DashboardContext';
 
 const ToolbarMenu = () => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const { exportDb } = useContext(DashboardContext);
 
   const handleClick = (event: MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
@@ -13,6 +15,11 @@ const ToolbarMenu = () => {
 
   const handleClose = () => {
     setAnchorEl(null);
+  };
+
+  const downloadDbHandler = () => {
+    exportDb!();
+    handleClose();
   };
 
   return (
@@ -29,7 +36,7 @@ const ToolbarMenu = () => {
         open={Boolean(anchorEl)}
         onClose={handleClose}
       >
-        <MenuItem onClick={handleClose}>Save databse</MenuItem>
+        <MenuItem onClick={downloadDbHandler}>Save databse</MenuItem>
         <MenuItem onClick={handleClose}>Import database</MenuItem>
         <MenuItem onClick={handleClose}>Cleaer database</MenuItem>
       </Menu>
