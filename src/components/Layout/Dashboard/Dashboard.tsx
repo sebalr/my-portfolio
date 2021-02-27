@@ -102,11 +102,11 @@ const Dashboard = () => {
   ) : <AddInvestmentDialog open={state.newDialogOn} close={closeDialogHandler} />;
 
   return (
-    <div>
+    <>
       {dialogs}
       <h2>Dashboard</h2>
       {dashboard}
-    </div>
+    </>
   );
 };
 

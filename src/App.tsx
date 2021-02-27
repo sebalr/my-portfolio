@@ -2,10 +2,8 @@ import Layout from 'components/Layout/Layout';
 import DashboardProvider from 'context/DashboardContext';
 
 const App = () => (
-  <div>
-    <DashboardProvider>
-      <Layout />
-    </DashboardProvider>
-  </div>
+  <DashboardProvider>
+    <Layout />
+  </DashboardProvider>
 );
 export default App;

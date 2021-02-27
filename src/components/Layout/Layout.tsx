@@ -7,6 +7,8 @@ import { DashboardContext } from 'context/DashboardContext';
 import Dashboard from 'components/Layout/Dashboard/Dashboard';
 import InvestmentsDatabase from 'database/database';
 
+import styles from './Layout.module.css';
+
 const Layout = () => {
   const { updateInvestments } = useContext(DashboardContext);
 
@@ -19,14 +21,14 @@ const Layout = () => {
   }, []);
 
   return (
-    <div>
+    <div className={styles.layout}>
       <Toolbar />
       <MuiPickersUtilsProvider utils={DateFnsUtils}>
-        <Container maxWidth="md">
-          <main>
+        <main className={styles.main}>
+          <Container className={styles.scrollContainer} maxWidth="md">
             <Dashboard />
-          </main>
-        </Container>
+          </Container>
+        </main>
       </MuiPickersUtilsProvider>
     </div>
   );
