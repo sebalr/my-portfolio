@@ -24,7 +24,7 @@ interface IOperationDialogState {
   date: Date;
 }
 
-const AddInvestmentDialog = (props: IOperationDialogProps) => {
+const NewOperationDialog = (props: IOperationDialogProps) => {
   const emptyModal: IOperationDialogState = {
     amount: '',
     amountBefore: '',
@@ -48,27 +48,29 @@ const AddInvestmentDialog = (props: IOperationDialogProps) => {
     close();
   };
 
-  const syncValues = (oldState: IOperationDialogState, newState: IOperationDialogState): IOperationDialogState => {
+  const syncValues = (newState: IOperationDialogState): IOperationDialogState => {
     const auxState = { ...newState };
+    auxState.amountBefore = Number.isNaN(auxState.amountBefore) ? 0 : auxState.amountBefore;
+    auxState.amount = Number.isNaN(auxState.amount) ? 0 : auxState.amount;
     if (operation === InvestmentOperation.increase) {
-      auxState.amountAfter = Number(oldState.amountBefore) + Number(auxState.amount);
+      auxState.amountAfter = Number(auxState.amountBefore) + Number(auxState.amount);
     } else if (operation === InvestmentOperation.decrease) {
-      auxState.amountAfter = Number(oldState.amountBefore) - Number(auxState.amount);
+      auxState.amountAfter = Number(auxState.amountBefore) - Number(auxState.amount);
     }
     return auxState;
   };
 
   const amountChangeHandler = ($event: ChangeEvent<HTMLInputElement>) => {
     setstate(prevState => {
-      const newState = { ...state, amount: $event.target.valueAsNumber };
-      return syncValues(prevState, newState);
+      const newState = { ...prevState, amount: $event.target.valueAsNumber };
+      return syncValues(newState);
     });
   };
 
   const ammountBeforeChangeHandler = ($event: ChangeEvent<HTMLInputElement>) => {
     setstate(prevState => {
       const newState = { ...prevState, amountBefore: $event.target.valueAsNumber };
-      return syncValues(prevState, newState);
+      return syncValues(newState);
     });
   };
 
@@ -121,7 +123,7 @@ const AddInvestmentDialog = (props: IOperationDialogProps) => {
               fullWidth
               label="Total before operation"
               adornment="$"
-              value={amount}
+              value={amountBefore}
               change={ammountBeforeChangeHandler}
             />
             <AdornmentInput
@@ -159,4 +161,4 @@ const AddInvestmentDialog = (props: IOperationDialogProps) => {
     </Dialog>
   );
 };
-export default AddInvestmentDialog;
+export default NewOperationDialog;
