@@ -2,7 +2,7 @@ import { useEffect, useContext } from 'react';
 import DateFnsUtils from '@date-io/date-fns';
 import { MuiPickersUtilsProvider } from '@material-ui/pickers';
 import Container from '@material-ui/core/Container';
-import Toolbar from 'components/Layout/Toolbar/Toolbar';
+import Toolbar from 'components/Layout/Toolbar/MyToolbar';
 import { DashboardContext } from 'context/DashboardContext';
 import Dashboard from 'components/Layout/Dashboard/Dashboard';
 import InvestmentsDatabase from 'database/database';
