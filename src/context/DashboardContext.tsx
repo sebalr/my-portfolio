@@ -111,8 +111,15 @@ const DashboardProvider = (props: any) => {
     updateInvestments(investments);
   };
 
-  const importDb = async (blob: Blob) => {
+  const removeDb = async () => {
     await state.db.delete();
+    const newDb = new InvestmentsDatabase('investmentsDb');
+    setState({ ...state, db: newDb });
+    updateInvestments([]);
+  };
+
+  const importDb = async (blob: Blob) => {
+    await removeDb();
     const newDb = await importDB(blob) as InvestmentsDatabase;
     setState({ ...state, db: newDb });
     updateInvestments(await newDb.investments.toArray());
@@ -131,6 +138,7 @@ const DashboardProvider = (props: any) => {
           exportDb,
           importDb,
           loadDataFromDb,
+          removeDb,
         }
       }
     >

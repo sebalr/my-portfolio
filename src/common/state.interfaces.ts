@@ -42,6 +42,7 @@ export interface IDashboardContext {
   loadDataFromDb?: () => Promise<void>;
   exportDb?: () => Promise<void>;
   importDb?: (blob: Blob) => Promise<void>;
+  removeDb?: () => Promise<void>;
 }
 
 export interface IInvestment {

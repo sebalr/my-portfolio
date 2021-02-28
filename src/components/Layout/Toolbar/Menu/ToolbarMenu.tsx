@@ -8,7 +8,7 @@ import { ModalContext } from 'context/ModalContext';
 
 const ToolbarMenu = () => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const { exportDb } = useContext(DashboardContext);
+  const { exportDb, removeDb } = useContext(DashboardContext);
   const { openLoadDbDialog } = useContext(ModalContext);
 
   const handleClick = (event: MouseEvent<HTMLButtonElement>) => {
@@ -29,6 +29,11 @@ const ToolbarMenu = () => {
     handleClose();
   };
 
+  const clearDbHandler = () => {
+    removeDb!();
+    handleClose();
+  };
+
   return (
     <div>
       <IconButton
@@ -45,7 +50,7 @@ const ToolbarMenu = () => {
       >
         <MenuItem onClick={downloadDbHandler}>Save databse</MenuItem>
         <MenuItem onClick={loadDbHandler}>Import database</MenuItem>
-        <MenuItem onClick={handleClose}>Cleaer database</MenuItem>
+        <MenuItem onClick={clearDbHandler}>Clear database</MenuItem>
       </Menu>
     </div>
   );
