@@ -8,19 +8,20 @@ import { createContext, useState } from 'react';
 import InvestmentsDatabase from 'database/database';
 import { importDB, exportDB } from 'dexie-export-import';
 import download from 'downloadjs';
+import calculateProfit from 'helpers/investment';
 
 interface IDashboardProviderState {
   db: InvestmentsDatabase;
   investments: Array<IInvestment>;
   selectedInvestment: IInvestment | null;
+  operations: Array<IInvestmentOperation>;
 }
 
 export const DashboardContext = createContext<IDashboardContext>(
   {
-    dashboardContext: {
-      investments: [],
-      selectedInvestment: null,
-    },
+    operations: [],
+    investments: [],
+    selectedInvestment: null,
   },
 );
 
@@ -31,6 +32,7 @@ const DashboardProvider = (props: any) => {
       db: new InvestmentsDatabase('investmentsDb'),
       investments: [],
       selectedInvestment: null,
+      operations: [],
     },
   );
 
@@ -51,7 +53,12 @@ const DashboardProvider = (props: any) => {
         const updatedInvestments = [...prevState.investments];
         updatedInvestments[investmentIndex].amount = operation.amountAfter;
         updatedInvestments[investmentIndex].date = operation.date;
-        return ({ ...prevState, investments: updatedInvestments });
+        return (
+          {
+            ...prevState,
+            investments: updatedInvestments,
+            operations: prevState.operations.concat(operation),
+          });
       });
     });
   };
@@ -60,7 +67,7 @@ const DashboardProvider = (props: any) => {
   const addInvestment = async (investment: IInvestment) => {
     await state.db.transaction('rw', state.db.investments, state.db.operations, async () => {
       const id = await state.db.investments.add(investment);
-      await state.db.operations.add({
+      const operation = {
         investmentId: id,
         asset: investment.asset,
         date: investment.date,
@@ -68,9 +75,15 @@ const DashboardProvider = (props: any) => {
         amountAfter: investment.amount,
         amountBefore: 0,
         operation: InvestmentOperation.new,
-      });
+      };
+      await state.db.operations.add(operation);
       const updatedInvestment = { ...investment, id };
-      setState(prevState => ({ ...prevState, investments: [...prevState.investments, updatedInvestment] }));
+      setState(prevState => (
+        {
+          ...prevState,
+          investments: [...prevState.investments, updatedInvestment],
+          operations: prevState.operations.concat(operation),
+        }));
     });
   };
 
@@ -96,8 +109,8 @@ const DashboardProvider = (props: any) => {
     });
   };
 
-  const updateInvestments = (investments: IInvestment[]) => {
-    setState(prevState => ({ ...prevState, investments }));
+  const updateInvestmentsAndOperations = (investments: IInvestment[], operations: IInvestmentOperation[]) => {
+    setState(prevState => ({ ...prevState, investments, operations }));
   };
 
   const exportDb = async () => {
@@ -108,37 +121,46 @@ const DashboardProvider = (props: any) => {
 
   const loadDataFromDb = async () => {
     const investments = await state.db.investments.toArray();
-    updateInvestments(investments);
+    const operations = await state.db.operations.toArray();
+    updateInvestmentsAndOperations(investments, operations);
   };
 
   const removeDb = async () => {
     await state.db.delete();
     const newDb = new InvestmentsDatabase('investmentsDb');
     setState({ ...state, db: newDb });
-    updateInvestments([]);
+    updateInvestmentsAndOperations([], []);
   };
 
   const importDb = async (blob: Blob) => {
     await removeDb();
     const newDb = await importDB(blob) as InvestmentsDatabase;
     setState({ ...state, db: newDb });
-    updateInvestments(await newDb.investments.toArray());
+    const investments = await newDb.investments.toArray();
+    const operations = await newDb.operations.toArray();
+    updateInvestmentsAndOperations(investments, operations);
+  };
+
+  const investmentProfit = async (investmentId: number): Promise<number | undefined> => {
+    const operations = state.db.operations.where('investmentId').equals(investmentId);
+    const array = await operations.toArray();
+    return calculateProfit(array);
   };
 
   return (
     <DashboardContext.Provider
       value={
         {
-          dashboardContext: state,
+          ...state,
           addInvestment,
           removeInvestment,
-          updateInvestments,
           updateInvestment,
           newInvestmentOperation,
           exportDb,
           importDb,
           loadDataFromDb,
           removeDb,
+          investmentProfit,
         }
       }
     >

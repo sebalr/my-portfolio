@@ -30,11 +30,13 @@ export interface IModalContext {
 export interface IDashboardContextState {
   investments: Array<IInvestment>;
   selectedInvestment: IInvestment | null;
+  operations: Array<IInvestmentOperation>;
 }
 
 export interface IDashboardContext {
-  dashboardContext: IDashboardContextState;
-  updateInvestments?: (investment: IInvestment[]) => void;
+  investments: Array<IInvestment>;
+  selectedInvestment: IInvestment | null;
+  operations: Array<IInvestmentOperation>;
   addInvestment?: (investment: IInvestment) => void;
   removeInvestment?: (id: number) => void;
   updateInvestment?: (investment: IInvestment, amount: number, date: Date) => void;
@@ -43,6 +45,7 @@ export interface IDashboardContext {
   exportDb?: () => Promise<void>;
   importDb?: (blob: Blob) => Promise<void>;
   removeDb?: () => Promise<void>;
+  investmentProfit?: (investmentId: number) => Promise<number | undefined>;
 }
 
 export interface IInvestment {

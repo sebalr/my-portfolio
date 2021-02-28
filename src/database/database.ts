@@ -12,7 +12,7 @@ export default class InvestmentsDatabase extends Dexie {
     this.version(1).stores(
       {
         investments: '++id,date',
-        operations: '++id,date,operation,assetId',
+        operations: '++id,date,operation,investmentId',
       },
     );
     this.investments = this.table('investments');

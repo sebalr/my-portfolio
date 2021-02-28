@@ -69,7 +69,7 @@ const UpdateInvestmentDialog = (props: IUpdateDialogProps) => {
         </DialogTitle>
         <DialogContent>
           <DialogContentText>
-            Current ammount:
+            Current ammount:&nbsp;
             {investment.amount}
           </DialogContentText>
           <DatePicker

@@ -4,6 +4,7 @@ import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
 import DeleteIcon from '@material-ui/icons/Delete';
 import { DashboardContext } from 'context/DashboardContext';
+import ProfitLabel from 'components/Layout/Dashboard/Investment/ProfitLabel/ProfitLabel';
 
 import styles from './Investment.module.css';
 
@@ -32,7 +33,7 @@ const Investment = (props: IInvestmentProps) => {
   };
 
   const openDecreaseOperationHandler = () => {
-    newOperation(investment, InvestmentOperation.increase);
+    newOperation(investment, InvestmentOperation.decrease);
   };
 
   return (
@@ -48,6 +49,7 @@ const Investment = (props: IInvestmentProps) => {
         $
         {investment.amount.toLocaleString()}
       </strong>
+      <ProfitLabel investmentId={investment.id!} />
       <div className="flex-row no-wrap">
         <Button
           onClick={openDecreaseOperationHandler}

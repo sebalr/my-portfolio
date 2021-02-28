@@ -50,8 +50,8 @@ const NewOperationDialog = (props: IOperationDialogProps) => {
 
   const syncValues = (newState: IOperationDialogState): IOperationDialogState => {
     const auxState = { ...newState };
-    auxState.amountBefore = Number.isNaN(auxState.amountBefore) ? 0 : auxState.amountBefore;
-    auxState.amount = Number.isNaN(auxState.amount) ? 0 : auxState.amount;
+    auxState.amountBefore = Number.isNaN(auxState.amountBefore) ? '' : auxState.amountBefore;
+    auxState.amount = Number.isNaN(auxState.amount) ? '' : auxState.amount;
     if (operation === InvestmentOperation.increase) {
       auxState.amountAfter = Number(auxState.amountBefore) + Number(auxState.amount);
     } else if (operation === InvestmentOperation.decrease) {

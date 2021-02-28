@@ -16,7 +16,7 @@ interface IDashboardState {
 }
 
 const Dashboard = () => {
-  const { dashboardContext: contextState } = useContext(DashboardContext);
+  const { investments } = useContext(DashboardContext);
   const { dialogsState, openNewDialog, openUpdaeDialog, openNewOperationDialog, closeOpenDialogs } = useContext(ModalContext);
 
   const [state, setstate] = useState<IDashboardState>({ selectedInvestment: null });
@@ -44,14 +44,14 @@ const Dashboard = () => {
 
   let dashboard = <Welcome openAddDialog={openNewDialogHandler} />;
 
-  if (contextState.investments.length > 0) {
+  if (investments.length > 0) {
     dashboard = (
       <>
         <Summary
           openAddDialog={openNewDialogHandler}
-          investments={contextState.investments}
+          investments={investments}
         />
-        { contextState.investments.map(item => (
+        { investments.map(item => (
           <Investment
             key={item.id}
             investment={item}
