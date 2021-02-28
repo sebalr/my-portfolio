@@ -100,6 +100,10 @@ const DashboardProvider = (props: any) => {
     download(blob, name, 'application/json');
   };
 
+  const importDb = async (blob: Blob) => {
+    await importInto(InvestmentsDatabase, blob);
+  };
+
   return (
     <DashboardContext.Provider
       value={
@@ -111,6 +115,7 @@ const DashboardProvider = (props: any) => {
           updateInvestment,
           newInvestmentOperation,
           exportDb,
+          importDb,
         }
       }
     >

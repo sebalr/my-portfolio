@@ -1,9 +1,12 @@
 import Layout from 'components/Layout/Layout';
+import ModalContextProvider from 'context/ModalContext';
 import DashboardProvider from 'context/DashboardContext';
 
 const App = () => (
-  <DashboardProvider>
-    <Layout />
-  </DashboardProvider>
+  <ModalContextProvider>
+    <DashboardProvider>
+      <Layout />
+    </DashboardProvider>
+  </ModalContextProvider>
 );
 export default App;

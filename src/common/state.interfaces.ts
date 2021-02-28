@@ -10,6 +10,26 @@ export interface IAppState {
   addDialogOn: boolean,
 }
 
+export interface IDialogsState {
+  updateDialogOn: boolean;
+  newOperationOn: boolean;
+  newDialogOn: boolean;
+  loadDbDialogOn: boolean;
+}
+
+export interface IModalProviderState {
+  dialogsState: IDialogsState
+}
+
+export interface IModalContext {
+  dialogsState: IDialogsState;
+  openNewDialog?: () => void;
+  openUpdaeDialog?: () => void;
+  openNewOperationDialog?: () => void;
+  openLoadDbDialog?: () => void;
+  closeOpenDialogs?: () => void;
+}
+
 export interface IDashboardProviderState {
   investments: Array<IInvestment>;
   selectedInvestment: IInvestment | null;
@@ -23,6 +43,7 @@ export interface IDashboardContext {
   updateInvestment?: (investment: IInvestment, amount: number, date: Date) => void;
   newInvestmentOperation?: (operation: IInvestmentOperation) => void;
   exportDb?: () => Promise<void>;
+  importDb?: (blob: Blob) => Promise<void>;
 }
 
 export interface IInvestment {
