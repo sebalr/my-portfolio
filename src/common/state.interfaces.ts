@@ -31,6 +31,7 @@ export interface IModalContext {
 }
 
 export interface IDashboardProviderState {
+  db: any | null;
   investments: Array<IInvestment>;
   selectedInvestment: IInvestment | null;
 }
@@ -42,6 +43,7 @@ export interface IDashboardContext {
   removeInvestment?: (id: number) => void;
   updateInvestment?: (investment: IInvestment, amount: number, date: Date) => void;
   newInvestmentOperation?: (operation: IInvestmentOperation) => void;
+  loadDataFromDb?: () => Promise<void>;
   exportDb?: () => Promise<void>;
   importDb?: (blob: Blob) => Promise<void>;
 }

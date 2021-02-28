@@ -1,7 +1,7 @@
 import Dexie from 'dexie';
 import { IInvestment, IInvestmentOperation } from 'common/state.interfaces';
 
-class InvestmentsDatabase extends Dexie {
+export default class InvestmentsDatabase extends Dexie {
 
   investments: Dexie.Table<IInvestment, number>;
 
@@ -20,5 +20,3 @@ class InvestmentsDatabase extends Dexie {
   }
 
 }
-
-export default new InvestmentsDatabase('investmentsDb');

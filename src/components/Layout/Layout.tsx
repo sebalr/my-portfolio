@@ -10,14 +10,10 @@ import InvestmentsDatabase from 'database/database';
 import styles from './Layout.module.css';
 
 const Layout = () => {
-  const { updateInvestments } = useContext(DashboardContext);
+  const { loadDataFromDb } = useContext(DashboardContext);
 
   useEffect(() => {
-    const loadDataFromDb = async () => {
-      const investments = await InvestmentsDatabase.investments.toArray();
-      updateInvestments!(investments);
-    };
-    loadDataFromDb();
+    loadDataFromDb!();
   }, []);
 
   return (
