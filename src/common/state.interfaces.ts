@@ -1,13 +1,10 @@
+/* eslint-disable no-unused-vars */
+
 export enum InvestmentOperation {
   new = 1,
   increase,
   decrease,
   update
-}
-
-/* eslint-disable no-unused-vars */
-export interface IAppState {
-  addDialogOn: boolean,
 }
 
 export interface IDialogsState {
@@ -30,14 +27,13 @@ export interface IModalContext {
   closeOpenDialogs?: () => void;
 }
 
-export interface IDashboardProviderState {
-  db: any | null;
+export interface IDashboardContextState {
   investments: Array<IInvestment>;
   selectedInvestment: IInvestment | null;
 }
 
 export interface IDashboardContext {
-  dashboardContext: IDashboardProviderState;
+  dashboardContext: IDashboardContextState;
   updateInvestments?: (investment: IInvestment[]) => void;
   addInvestment?: (investment: IInvestment) => void;
   removeInvestment?: (id: number) => void;

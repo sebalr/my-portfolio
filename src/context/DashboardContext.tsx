@@ -1,6 +1,5 @@
 import {
   IDashboardContext,
-  IDashboardProviderState,
   IInvestment,
   IInvestmentOperation,
   InvestmentOperation,
@@ -10,10 +9,15 @@ import InvestmentsDatabase from 'database/database';
 import { importDB, exportDB } from 'dexie-export-import';
 import download from 'downloadjs';
 
+interface IDashboardProviderState {
+  db: InvestmentsDatabase;
+  investments: Array<IInvestment>;
+  selectedInvestment: IInvestment | null;
+}
+
 export const DashboardContext = createContext<IDashboardContext>(
   {
     dashboardContext: {
-      db: null,
       investments: [],
       selectedInvestment: null,
     },
@@ -32,8 +36,8 @@ const DashboardProvider = (props: any) => {
 
   // Update an existing investment with indicated operation
   const newInvestmentOperation = async (operation: IInvestmentOperation) => {
-    await state.db!.transaction('rw', state.db!.investments, state.db!.operations, async () => {
-      await state.db!.investments.update(
+    await state.db.transaction('rw', state.db.investments, state.db.operations, async () => {
+      await state.db.investments.update(
         operation.investmentId,
         {
           amount: operation.amountAfter,
@@ -41,7 +45,7 @@ const DashboardProvider = (props: any) => {
         },
       );
 
-      await state.db!.operations.add(operation);
+      await state.db.operations.add(operation);
       setState(prevState => {
         const investmentIndex = prevState.investments.findIndex(x => x.id === operation.investmentId);
         const updatedInvestments = [...prevState.investments];
@@ -54,9 +58,9 @@ const DashboardProvider = (props: any) => {
 
   // investment operations
   const addInvestment = async (investment: IInvestment) => {
-    await state.db!.transaction('rw', state.db!.investments, state.db!.operations, async () => {
-      const id = await state.db!.investments.add(investment);
-      await state.db!.operations.add({
+    await state.db.transaction('rw', state.db.investments, state.db.operations, async () => {
+      const id = await state.db.investments.add(investment);
+      await state.db.operations.add({
         investmentId: id,
         asset: investment.asset,
         date: investment.date,
@@ -85,7 +89,7 @@ const DashboardProvider = (props: any) => {
   };
 
   const removeInvestment = async (id: number) => {
-    await state.db!.investments.delete(id);
+    await state.db.investments.delete(id);
     setState(prevState => {
       const newArray = prevState.investments.filter(item => item.id !== id);
       return ({ ...prevState, investments: newArray });
@@ -97,18 +101,18 @@ const DashboardProvider = (props: any) => {
   };
 
   const exportDb = async () => {
-    const blob = await exportDB(state.db!);
+    const blob = await exportDB(state.db);
     const name = `portfolio-export-${new Date().toISOString().slice(0, 10)}.json`;
     download(blob, name, 'application/json');
   };
 
   const loadDataFromDb = async () => {
-    const investments = await state.db!.investments.toArray();
+    const investments = await state.db.investments.toArray();
     updateInvestments(investments);
   };
 
   const importDb = async (blob: Blob) => {
-    await state.db!.delete();
+    await state.db.delete();
     const newDb = await importDB(blob) as InvestmentsDatabase;
     setState({ ...state, db: newDb });
     updateInvestments(await newDb.investments.toArray());
