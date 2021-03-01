@@ -37,6 +37,7 @@ export interface IDashboardContext {
   investments: Array<IInvestment>;
   selectedInvestment: IInvestment | null;
   operations: Array<IInvestmentOperation>;
+  operation: InvestmentOperation;
   addInvestment?: (investment: IInvestment) => void;
   removeInvestment?: (id: number) => void;
   updateInvestment?: (investment: IInvestment, amount: number, date: Date) => void;
@@ -46,6 +47,8 @@ export interface IDashboardContext {
   importDb?: (blob: Blob) => Promise<void>;
   removeDb?: () => Promise<void>;
   investmentProfit?: (investmentId: number) => Promise<number | undefined>;
+  selectInvestment?: (investment: IInvestment) => void;
+  selectInvestmentOperation?: (selectedInvestment: IInvestment, operation: InvestmentOperation) => void;
 }
 
 export interface IInvestment {

@@ -1,41 +1,20 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext } from 'react';
 import Summary from 'components/Layout/Dashboard/Summary/Summary';
-import Investment from 'components/Layout/Dashboard/Investment/Investment';
+import Investments from 'components/Layout/Dashboard/Investments/Investments';
 import { DashboardContext } from 'context/DashboardContext';
 import Welcome from 'components/Layout/Dashboard/Welcome/Welcome';
 import UpdateInvestmentDialog from 'components/Dialogs/UpdateInvestmentDialog';
-import { IInvestment, InvestmentOperation } from 'common/state.interfaces';
 import AddInvestmentDialog from 'components/Dialogs/AddInvestmentDialog';
 import NewOperationDialog from 'components/Dialogs/NewOperationDialog';
 import ImportDbDialog from 'components/Dialogs/ImportDbDialog';
 import { ModalContext } from 'context/ModalContext';
 
-interface IDashboardState {
-  selectedInvestment: IInvestment | null;
-  operation?: InvestmentOperation;
-}
-
 const Dashboard = () => {
-  const { investments } = useContext(DashboardContext);
-  const { dialogsState, openNewDialog, openUpdaeDialog, openNewOperationDialog, closeOpenDialogs } = useContext(ModalContext);
-
-  const [state, setstate] = useState<IDashboardState>({ selectedInvestment: null });
+  const { selectedInvestment, investments, operation } = useContext(DashboardContext);
+  const { dialogsState, openNewDialog, closeOpenDialogs } = useContext(ModalContext);
 
   const openNewDialogHandler = () => {
     openNewDialog!();
-  };
-
-  const openUpdateDialogHandler = (investment: IInvestment) => {
-    setstate({ selectedInvestment: investment });
-    openUpdaeDialog!();
-  };
-
-  const openOperationDialogHandler = (investment: IInvestment, operation: InvestmentOperation) => {
-    setstate({
-      selectedInvestment: investment,
-      operation,
-    });
-    openNewOperationDialog!();
   };
 
   const closeDialogHandler = () => {
@@ -51,19 +30,12 @@ const Dashboard = () => {
           openAddDialog={openNewDialogHandler}
           investments={investments}
         />
-        { investments.map(item => (
-          <Investment
-            key={item.id}
-            investment={item}
-            update={openUpdateDialogHandler}
-            newOperation={openOperationDialogHandler}
-          />
-        ))}
+        <Investments investments={investments} />
       </>
     );
   }
 
-  const dialogs = state.selectedInvestment ? (
+  const dialogs = selectedInvestment ? (
     <>
       <ImportDbDialog
         open={dialogsState.loadDbDialogOn}
@@ -75,13 +47,13 @@ const Dashboard = () => {
       />
       <UpdateInvestmentDialog
         open={dialogsState.updateDialogOn}
-        investment={state.selectedInvestment!}
+        investment={selectedInvestment!}
         close={closeDialogHandler}
       />
       <NewOperationDialog
         open={dialogsState.newOperationOn}
-        investment={state.selectedInvestment!}
-        operation={state.operation}
+        investment={selectedInvestment!}
+        operation={operation!}
         close={closeDialogHandler}
       />
     </>

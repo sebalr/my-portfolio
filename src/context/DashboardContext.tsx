@@ -15,6 +15,7 @@ interface IDashboardProviderState {
   investments: Array<IInvestment>;
   selectedInvestment: IInvestment | null;
   operations: Array<IInvestmentOperation>;
+  operation: InvestmentOperation;
 }
 
 export const DashboardContext = createContext<IDashboardContext>(
@@ -22,6 +23,7 @@ export const DashboardContext = createContext<IDashboardContext>(
     operations: [],
     investments: [],
     selectedInvestment: null,
+    operation: InvestmentOperation.new,
   },
 );
 
@@ -33,6 +35,7 @@ const DashboardProvider = (props: any) => {
       investments: [],
       selectedInvestment: null,
       operations: [],
+      operation: InvestmentOperation.new,
     },
   );
 
@@ -128,14 +131,14 @@ const DashboardProvider = (props: any) => {
   const removeDb = async () => {
     await state.db.delete();
     const newDb = new InvestmentsDatabase('investmentsDb');
-    setState({ ...state, db: newDb });
+    setState(prevState => ({ ...prevState, db: newDb }));
     updateInvestmentsAndOperations([], []);
   };
 
   const importDb = async (blob: Blob) => {
     await removeDb();
     const newDb = await importDB(blob) as InvestmentsDatabase;
-    setState({ ...state, db: newDb });
+    setState(prevState => ({ ...prevState, db: newDb }));
     const investments = await newDb.investments.toArray();
     const operations = await newDb.operations.toArray();
     updateInvestmentsAndOperations(investments, operations);
@@ -145,6 +148,14 @@ const DashboardProvider = (props: any) => {
     const operations = state.db.operations.where('investmentId').equals(investmentId);
     const array = await operations.toArray();
     return calculateProfit(array);
+  };
+
+  const selectInvestment = (investment: IInvestment) => {
+    setState(prevState => ({ ...prevState, selectedInvestment: investment }));
+  };
+
+  const selectInvestmentOperation = (selectedInvestment: IInvestment, operation: InvestmentOperation) => {
+    setState(prevState => ({ ...prevState, selectedInvestment, operation }));
   };
 
   return (
@@ -161,6 +172,8 @@ const DashboardProvider = (props: any) => {
           loadDataFromDb,
           removeDb,
           investmentProfit,
+          selectInvestment,
+          selectInvestmentOperation,
         }
       }
     >

@@ -4,7 +4,7 @@ import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
 import DeleteIcon from '@material-ui/icons/Delete';
 import { DashboardContext } from 'context/DashboardContext';
-import ProfitLabel from 'components/Layout/Dashboard/Investment/ProfitLabel/ProfitLabel';
+import ProfitLabel from 'components/Layout/Dashboard/Investments/Investment/ProfitLabel/ProfitLabel';
 
 import styles from './Investment.module.css';
 
