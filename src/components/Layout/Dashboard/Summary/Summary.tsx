@@ -30,7 +30,7 @@ const Summary = (props: ISummaryProps) => {
     <Card variant="outlined">
       <CardContent>
         <div className="flex-row">
-          <h3>Inversiones</h3>
+          <h3>Portfolio</h3>
           <Button
             onClick={openAddDialog}
             variant="outlined"

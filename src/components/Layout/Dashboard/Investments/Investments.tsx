@@ -1,8 +1,9 @@
+import { useContext } from 'react';
 import { IInvestment, InvestmentOperation } from 'common/state.interfaces';
-import Investment from 'components/Layout/Dashboard/Investments/Investment/Investment';
 import { DashboardContext } from 'context/DashboardContext';
 import { ModalContext } from 'context/ModalContext';
-import { useContext } from 'react';
+import Investment from 'components/Layout/Dashboard/Investments/Investment/Investment';
+import FillterInvestments from 'components/Layout/Dashboard/Investments/FilterInvestments/FillterInvestments';
 
 interface IInvestmentsProps {
   investments: IInvestment[]
@@ -33,6 +34,7 @@ const Investments = (props: IInvestmentsProps) => {
   ));
   return (
     <>
+      <FillterInvestments />
       { investmentsList}
     </>
   );

@@ -1,5 +1,6 @@
 import {
   IDashboardContext,
+  IFilterOperations,
   IInvestment,
   IInvestmentOperation,
   InvestmentOperation,
@@ -8,7 +9,7 @@ import { createContext, useState } from 'react';
 import InvestmentsDatabase from 'database/database';
 import { importDB, exportDB } from 'dexie-export-import';
 import download from 'downloadjs';
-import calculateProfit from 'helpers/investment';
+import calculateProfit, { defaultFilter } from 'helpers/investment';
 
 interface IDashboardProviderState {
   db: InvestmentsDatabase;
@@ -16,6 +17,7 @@ interface IDashboardProviderState {
   selectedInvestment: IInvestment | null;
   operations: Array<IInvestmentOperation>;
   operation: InvestmentOperation;
+  operationFilters: IFilterOperations | null;
 }
 
 export const DashboardContext = createContext<IDashboardContext>(
@@ -24,6 +26,7 @@ export const DashboardContext = createContext<IDashboardContext>(
     investments: [],
     selectedInvestment: null,
     operation: InvestmentOperation.new,
+    operationFilters: null,
   },
 );
 
@@ -35,6 +38,7 @@ const DashboardProvider = (props: any) => {
       investments: [],
       selectedInvestment: null,
       operations: [],
+      operationFilters: null,
       operation: InvestmentOperation.new,
     },
   );
@@ -108,12 +112,15 @@ const DashboardProvider = (props: any) => {
     await state.db.investments.delete(id);
     setState(prevState => {
       const newArray = prevState.investments.filter(item => item.id !== id);
-      return ({ ...prevState, investments: newArray });
+      const newOperations = prevState.operations.filter(item => item.investmentId !== id);
+      return ({ ...prevState, investments: newArray, operations: newOperations });
     });
   };
 
-  const updateInvestmentsAndOperations = (investments: IInvestment[], operations: IInvestmentOperation[]) => {
-    setState(prevState => ({ ...prevState, investments, operations }));
+  const updateInvestmentsAndOperations = (
+    investments: IInvestment[], operations: IInvestmentOperation[], filter: IFilterOperations | null,
+  ) => {
+    setState(prevState => ({ ...prevState, investments, operations, operationFilters: filter }));
   };
 
   const exportDb = async () => {
@@ -124,24 +131,25 @@ const DashboardProvider = (props: any) => {
 
   const loadDataFromDb = async () => {
     const investments = await state.db.investments.toArray();
+    const filters = defaultFilter();
     const operations = await state.db.operations.toArray();
-    updateInvestmentsAndOperations(investments, operations);
+    updateInvestmentsAndOperations(investments, operations, filters);
   };
 
   const removeDb = async () => {
     await state.db.delete();
     const newDb = new InvestmentsDatabase('investmentsDb');
-    setState(prevState => ({ ...prevState, db: newDb }));
-    updateInvestmentsAndOperations([], []);
+    setState(prevState => ({ ...prevState, db: newDb, investments: [], operations: [], operationFilters: null }));
   };
 
   const importDb = async (blob: Blob) => {
     await removeDb();
     const newDb = await importDB(blob) as InvestmentsDatabase;
-    setState(prevState => ({ ...prevState, db: newDb }));
     const investments = await newDb.investments.toArray();
-    const operations = await newDb.operations.toArray();
-    updateInvestmentsAndOperations(investments, operations);
+    const operationFilters = defaultFilter();
+    const operations = await state.db.operations.where('date')
+      .between(operationFilters.from, operationFilters.to).toArray();
+    setState(prevState => ({ ...prevState, db: newDb, investments, operations, operationFilters }));
   };
 
   const investmentProfit = async (investmentId: number): Promise<number | undefined> => {
@@ -158,6 +166,11 @@ const DashboardProvider = (props: any) => {
     setState(prevState => ({ ...prevState, selectedInvestment, operation }));
   };
 
+  const filterOperations = async (filters: IFilterOperations) => {
+    const filtered = await state.db.operations.where('date').between(filters.from, filters.to).toArray();
+    setState(prevState => ({ ...prevState, operationFilters: filters, operations: filtered }));
+  };
+
   return (
     <DashboardContext.Provider
       value={
@@ -167,13 +180,14 @@ const DashboardProvider = (props: any) => {
           removeInvestment,
           updateInvestment,
           newInvestmentOperation,
+          loadDataFromDb,
           exportDb,
           importDb,
-          loadDataFromDb,
           removeDb,
           investmentProfit,
           selectInvestment,
           selectInvestmentOperation,
+          filterOperations,
         }
       }
     >

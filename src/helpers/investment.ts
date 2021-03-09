@@ -1,4 +1,4 @@
-import { IInvestmentOperation, InvestmentOperation } from 'common/state.interfaces';
+import { IFilterOperations, IInvestmentOperation, InvestmentOperation } from 'common/state.interfaces';
 
 const getNexValueForProfit = (investment: IInvestmentOperation) => {
   if (investment.operation === InvestmentOperation.update || investment.operation === InvestmentOperation.new) {
@@ -27,6 +27,18 @@ const calculateProfit = (investments: IInvestmentOperation[]): number | undefine
   }
   const totalProfit = profits.reduce((current, acc) => current + acc, 0);
   return totalProfit / profits.length;
+};
+
+export const defaultFilter = () => {
+  const fromDate = new Date();
+  fromDate.setMonth(fromDate.getMonth() - 1);
+  const toDate = new Date();
+  const filters: IFilterOperations = {
+    from: fromDate,
+    to: toDate,
+  };
+
+  return filters;
 };
 
 export default calculateProfit;

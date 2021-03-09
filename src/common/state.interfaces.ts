@@ -38,6 +38,7 @@ export interface IDashboardContext {
   selectedInvestment: IInvestment | null;
   operations: Array<IInvestmentOperation>;
   operation: InvestmentOperation;
+  operationFilters: IFilterOperations | null;
   addInvestment?: (investment: IInvestment) => void;
   removeInvestment?: (id: number) => void;
   updateInvestment?: (investment: IInvestment, amount: number, date: Date) => void;
@@ -49,6 +50,7 @@ export interface IDashboardContext {
   investmentProfit?: (investmentId: number) => Promise<number | undefined>;
   selectInvestment?: (investment: IInvestment) => void;
   selectInvestmentOperation?: (selectedInvestment: IInvestment, operation: InvestmentOperation) => void;
+  filterOperations?: (filters: IFilterOperations) => Promise<void>;
 }
 
 export interface IInvestment {
@@ -71,4 +73,9 @@ export interface IInvestmentOperation {
 export interface IAsset {
   name: string;
   abbreviation?: string;
+}
+
+export interface IFilterOperations {
+  from: Date;
+  to: Date;
 }
