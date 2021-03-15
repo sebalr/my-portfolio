@@ -21,7 +21,7 @@ const Layout = () => {
       <Toolbar />
       <MuiPickersUtilsProvider utils={DateFnsUtils}>
         <main className={styles.main}>
-          <Container className={styles.scrollContainer} maxWidth="md">
+          <Container maxWidth="md">
             <Dashboard />
           </Container>
         </main>
