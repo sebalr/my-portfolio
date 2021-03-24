@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import { useContext } from 'react';
 import Summary from 'components/Layout/Dashboard/Summary/Summary';
 import Investments from 'components/Layout/Dashboard/Investments/Investments';
 import { DashboardContext } from 'context/DashboardContext';
@@ -7,18 +7,21 @@ import UpdateInvestmentDialog from 'components/Dialogs/UpdateInvestmentDialog';
 import AddInvestmentDialog from 'components/Dialogs/AddInvestmentDialog';
 import NewOperationDialog from 'components/Dialogs/NewOperationDialog';
 import ImportDbDialog from 'components/Dialogs/ImportDbDialog';
-import { ModalContext } from 'context/ModalContext';
+import { useAppDispatch, useAppSelector } from 'store/hooks';
+import { showNew as showNewAction, hideAll } from 'store/modal/modalReducer';
 
 const Dashboard = () => {
+  const { showNew, showUpdate, showNewOperation, showLoadDb } = useAppSelector(state => state.modal);
+  const dispatch = useAppDispatch();
   const { selectedInvestment, investments, operation } = useContext(DashboardContext);
-  const { dialogsState, openNewDialog, closeOpenDialogs } = useContext(ModalContext);
-
-  const openNewDialogHandler = () => {
-    openNewDialog!();
-  };
 
   const closeDialogHandler = () => {
-    closeOpenDialogs!();
+    dispatch(hideAll());
+  };
+
+  const openNewDialogHandler = () => {
+    closeDialogHandler();
+    dispatch(showNewAction());
   };
 
   let dashboard = <Welcome openAddDialog={openNewDialogHandler} />;
@@ -38,20 +41,20 @@ const Dashboard = () => {
   const dialogs = selectedInvestment ? (
     <>
       <ImportDbDialog
-        open={dialogsState.loadDbDialogOn}
+        open={showLoadDb}
         close={closeDialogHandler}
       />
       <AddInvestmentDialog
-        open={dialogsState.newDialogOn}
+        open={showNew}
         close={closeDialogHandler}
       />
       <UpdateInvestmentDialog
-        open={dialogsState.updateDialogOn}
+        open={showUpdate}
         investment={selectedInvestment!}
         close={closeDialogHandler}
       />
       <NewOperationDialog
-        open={dialogsState.newOperationOn}
+        open={showNewOperation}
         investment={selectedInvestment!}
         operation={operation!}
         close={closeDialogHandler}
@@ -61,10 +64,10 @@ const Dashboard = () => {
     : (
       <>
         <ImportDbDialog
-          open={dialogsState.loadDbDialogOn}
+          open={showLoadDb}
           close={closeDialogHandler}
         />
-        <AddInvestmentDialog open={dialogsState.newDialogOn} close={closeDialogHandler} />
+        <AddInvestmentDialog open={showNew} close={closeDialogHandler} />
       </>
     );
 
