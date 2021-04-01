@@ -1,38 +1,39 @@
-import { useState, MouseEvent, useContext } from 'react';
+import { useState, MouseEvent, useContext, useCallback } from 'react';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import IconButton from '@material-ui/core/IconButton';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import { DashboardContext } from 'context/DashboardContext';
-import { ModalContext } from 'context/ModalContext';
+import { useAppDispatch } from 'store/hooks';
+import { showLoadDb } from 'store/modal/modalReducer';
 
 const ToolbarMenu = () => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const { exportDb, removeDb } = useContext(DashboardContext);
-  const { openLoadDbDialog } = useContext(ModalContext);
+  const dispatch = useAppDispatch();
 
   const handleClick = (event: MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
   };
 
-  const handleClose = () => {
+  const handleClose = useCallback(() => {
     setAnchorEl(null);
-  };
+  }, []);
 
-  const downloadDbHandler = () => {
+  const downloadDbHandler = useCallback(() => {
     exportDb!();
     handleClose();
-  };
+  }, []);
 
-  const loadDbHandler = () => {
-    openLoadDbDialog!();
+  const loadDbHandler = useCallback(() => {
+    dispatch(showLoadDb());
     handleClose();
-  };
+  }, []);
 
-  const clearDbHandler = () => {
+  const clearDbHandler = useCallback(() => {
     removeDb!();
     handleClose();
-  };
+  }, []);
 
   return (
     <div>

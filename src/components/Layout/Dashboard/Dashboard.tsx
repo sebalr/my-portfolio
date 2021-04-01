@@ -1,4 +1,4 @@
-import { useContext } from 'react';
+import { useCallback, useContext } from 'react';
 import Summary from 'components/Layout/Dashboard/Summary/Summary';
 import Investments from 'components/Layout/Dashboard/Investments/Investments';
 import { DashboardContext } from 'context/DashboardContext';
@@ -15,14 +15,14 @@ const Dashboard = () => {
   const dispatch = useAppDispatch();
   const { selectedInvestment, investments, operation } = useContext(DashboardContext);
 
-  const closeDialogHandler = () => {
+  const closeDialogHandler = useCallback(() => {
     dispatch(hideAll());
-  };
+  }, []);
 
-  const openNewDialogHandler = () => {
+  const openNewDialogHandler = useCallback(() => {
     closeDialogHandler();
     dispatch(showNewAction());
-  };
+  }, []);
 
   let dashboard = <Welcome openAddDialog={openNewDialogHandler} />;
 

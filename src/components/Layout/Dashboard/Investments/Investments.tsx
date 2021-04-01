@@ -1,9 +1,10 @@
-import { useContext } from 'react';
+import { useCallback, useContext } from 'react';
 import { IInvestment, InvestmentOperation } from 'common/state.interfaces';
 import { DashboardContext } from 'context/DashboardContext';
-import { ModalContext } from 'context/ModalContext';
 import Investment from 'components/Layout/Dashboard/Investments/Investment/Investment';
 import FillterInvestments from 'components/Layout/Dashboard/Investments/FilterInvestments/FillterInvestments';
+import { useAppDispatch } from 'store/hooks';
+import { showUpdate, showNewOperation, hideAll } from 'store/modal/modalReducer';
 
 interface IInvestmentsProps {
   investments: IInvestment[]
@@ -11,17 +12,19 @@ interface IInvestmentsProps {
 
 const Investments = (props: IInvestmentsProps) => {
   const { selectInvestment, selectInvestmentOperation } = useContext(DashboardContext);
-  const { openUpdaeDialog, openNewOperationDialog } = useContext(ModalContext);
+  const dispatch = useAppDispatch();
 
-  const openUpdateDialogHandler = (investment: IInvestment) => {
+  const openUpdateDialogHandler = useCallback((investment: IInvestment) => {
     selectInvestment!(investment);
-    openUpdaeDialog!();
-  };
+    dispatch(hideAll());
+    dispatch(showUpdate());
+  }, []);
 
-  const openOperationDialogHandler = (investment: IInvestment, operation: InvestmentOperation) => {
+  const openOperationDialogHandler = useCallback((investment: IInvestment, operation: InvestmentOperation) => {
     selectInvestmentOperation!(investment, operation);
-    openNewOperationDialog!();
-  };
+    dispatch(hideAll());
+    dispatch(showNewOperation());
+  }, []);
 
   const { investments } = props;
   const investmentsList = investments.map(item => (

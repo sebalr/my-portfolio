@@ -18,15 +18,6 @@ export interface IModalProviderState {
   dialogsState: IDialogsState
 }
 
-export interface IModalContext {
-  dialogsState: IDialogsState;
-  openNewDialog?: () => void;
-  openUpdaeDialog?: () => void;
-  openNewOperationDialog?: () => void;
-  openLoadDbDialog?: () => void;
-  closeOpenDialogs?: () => void;
-}
-
 export interface IDashboardContextState {
   investments: Array<IInvestment>;
   selectedInvestment: IInvestment | null;
