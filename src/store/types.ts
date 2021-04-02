@@ -9,7 +9,6 @@ export interface IModalState {
 }
 
 export interface IDashboardState {
-  db: InvestmentsDatabase;
   investments: Array<IInvestment>;
   selectedInvestment: IInvestment | null;
   operations: Array<IInvestmentOperation>;

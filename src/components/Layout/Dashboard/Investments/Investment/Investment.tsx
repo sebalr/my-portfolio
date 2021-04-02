@@ -23,7 +23,7 @@ const Investment = (props: IInvestmentProps) => {
 
   const removeInvestmentHandler = useCallback(() => {
     dispatch(removeInvestment(investment.id!));
-  }, [investment]);
+  }, [dispatch, investment]);
 
   const openUpdateInvestmentHandler = useCallback(() => {
     update(investment);

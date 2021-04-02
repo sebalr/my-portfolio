@@ -13,7 +13,6 @@ const Layout = () => {
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    console.log('jer');
     dispatch(loadFromDb());
   }, []);
 

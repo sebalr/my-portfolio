@@ -18,12 +18,12 @@ const Dashboard = () => {
 
   const closeDialogHandler = useCallback(() => {
     dispatch(hideAll());
-  }, []);
+  }, [dispatch]);
 
   const openNewDialogHandler = useCallback(() => {
     closeDialogHandler();
     dispatch(showNewAction());
-  }, []);
+  }, [closeDialogHandler, dispatch]);
 
   let dashboard = <Welcome openAddDialog={openNewDialogHandler} />;
 

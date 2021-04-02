@@ -55,27 +55,27 @@ const NewOperationDialog = (props: IOperationDialogProps) => {
     setamountAfter('');
     setDate(new Date());
     close();
-  }, [close]);
+  }, [close, setDate, setAmount, setAmountBefore, setamountAfter]);
 
   const amountChangeHandler = useCallback(($event: ChangeEvent<HTMLInputElement>) => {
     const values = syncValues({ amount: $event.target.valueAsNumber, amountBefore, amountAfter }, operation);
     setAmount(values.amount);
     setAmountBefore(values.amountBefore);
     setamountAfter(values.amountAfter);
-  }, [operation, amountBefore, amountAfter]);
+  }, [operation, amountBefore, amountAfter, setAmount, setAmountBefore, setamountAfter]);
 
   const ammountBeforeChangeHandler = useCallback(($event: ChangeEvent<HTMLInputElement>) => {
     const values = syncValues({ amountBefore: $event.target.valueAsNumber, amount, amountAfter }, operation);
     setAmount(values.amount);
     setAmountBefore(values.amountBefore);
     setamountAfter(values.amountAfter);
-  }, [operation, amount, amountAfter]);
+  }, [operation, amount, amountAfter, setAmount, setAmountBefore, setamountAfter]);
 
   const dateChangeHandler = useCallback((newDate: Date | null) => {
     if (newDate) {
       setDate(newDate);
     }
-  }, []);
+  }, [setDate]);
 
   const newOperationHandler = useCallback((event: FormEvent) => {
     event.preventDefault();

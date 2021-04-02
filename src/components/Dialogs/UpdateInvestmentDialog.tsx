@@ -29,17 +29,17 @@ const UpdateInvestmentDialog = (props: IUpdateDialogProps) => {
     setAmount('');
     setDate(new Date());
     close();
-  }, [close]);
+  }, [setAmount, setDate, close]);
 
   const amountChangeHandler = useCallback(($event: ChangeEvent<HTMLInputElement>) => {
     setAmount($event.target.valueAsNumber);
-  }, []);
+  }, [setAmount]);
 
   const dateChangeHandler = useCallback((newDate: Date | null) => {
     if (newDate) {
       setDate(newDate);
     }
-  }, []);
+  }, [setDate]);
 
   const updateInvestmentHandler = useCallback((event: FormEvent) => {
     event.preventDefault();

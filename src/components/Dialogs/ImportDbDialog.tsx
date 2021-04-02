@@ -23,7 +23,7 @@ const ImportDbDialog = (props: ILoadDbDialogProps) => {
 
   const fileChangeHandler = useCallback((selectedFile: Blob) => {
     setfile(selectedFile);
-  }, []);
+  }, [setfile]);
 
   const loadDbHandler = useCallback((event: FormEvent) => {
     event.preventDefault();
@@ -31,13 +31,13 @@ const ImportDbDialog = (props: ILoadDbDialogProps) => {
       dispatch(importDb(file));
       close();
     }
-  }, [close, dispatch]);
+  }, [close, dispatch, file]);
 
   return (
     <Dialog open={open} onClose={close} aria-labelledby="form-dialog-title">
       <form onSubmit={loadDbHandler}>
         <DialogTitle>
-          Import Database
+          Import Databases
         </DialogTitle>
         <DialogContent>
           <DialogContentText>

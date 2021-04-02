@@ -1,7 +1,6 @@
 import { createAction, createAsyncThunk, createReducer } from '@reduxjs/toolkit';
 import { IFilterOperations, IInvestment, IInvestmentOperation, InvestmentOperation } from 'common/state.interfaces';
-import InvestmentsDatabase from 'database/database';
-import { exportDB, importDB } from 'dexie-export-import';
+import { exportDB, importInto } from 'dexie-export-import';
 import download from 'downloadjs';
 import { defaultFilter } from 'helpers/investment';
 import {
@@ -19,6 +18,7 @@ import {
   UPDATE_INVESTMENT,
 } from 'store/dashboard/dashboardActionTypes';
 import { IDashboardState, RootState } from 'store/types';
+import db from 'database/database';
 
 // Investment
 export const addInvestment = createAsyncThunk<
@@ -26,9 +26,8 @@ export const addInvestment = createAsyncThunk<
   IInvestment,
   { state: RootState }>(
     ADD_INVESTMENT,
-    async (investment, thunkAPI) => {
-      const state = thunkAPI.getState();
-      const id = await state.dashboard.db.investments.add(investment);
+    async investment => {
+      const id = await db.investments.add(investment);
       const operation = {
         investmentId: id,
         asset: investment.asset,
@@ -38,7 +37,7 @@ export const addInvestment = createAsyncThunk<
         amountBefore: 0,
         operation: InvestmentOperation.new,
       };
-      await state.dashboard.db.operations.add(operation);
+      await db.operations.add(operation);
       const updatedInvestment = { ...investment, id };
 
       return [updatedInvestment, operation];
@@ -50,9 +49,8 @@ export const removeInvestment = createAsyncThunk<
   number,
   { state: RootState }>(
     REMOVE_INVESTMENT,
-    async (id, thunkAPI) => {
-      const state = thunkAPI.getState();
-      await state.dashboard.db.investments.delete(id);
+    async id => {
+      await db.investments.delete(id);
       return id;
     },
   );
@@ -66,8 +64,7 @@ export const updateInvestment = createAsyncThunk<
   },
   { state: RootState }>(
     UPDATE_INVESTMENT,
-    async ({ investment, amount, date }, thunkAPI) => {
-      const state = thunkAPI.getState();
+    async ({ investment, amount, date }) => {
       const operation: IInvestmentOperation = {
         investmentId: investment.id!,
         asset: investment.asset,
@@ -77,8 +74,8 @@ export const updateInvestment = createAsyncThunk<
         amountAfter: amount,
         operation: InvestmentOperation.update,
       };
-      await state.dashboard.db.transaction('rw', state.dashboard.db.investments, state.dashboard.db.operations, async () => {
-        await state.dashboard.db.investments.update(
+      await db.transaction('rw', db.investments, db.operations, async () => {
+        await db.investments.update(
           operation.investmentId,
           {
             amount: operation.amountAfter,
@@ -86,7 +83,7 @@ export const updateInvestment = createAsyncThunk<
           },
         );
 
-        await state.dashboard.db.operations.add(operation);
+        await db.operations.add(operation);
       });
       return operation;
     },
@@ -104,9 +101,8 @@ export const filterInvestmentOperations = createAsyncThunk<
   IFilterOperations,
   { state: RootState }>(
     FILTER_INVESTMENT_OPERATIONS,
-    async (filters, thunkAPI) => {
-      const state = thunkAPI.getState();
-      const filtered = await state.dashboard.db.operations.where('date').between(filters.from, filters.to).toArray();
+    async filters => {
+      const filtered = await db.operations.where('date').between(filters.from, filters.to).toArray();
       return [filters, filtered];
     },
   );
@@ -116,10 +112,9 @@ export const newInvestmentOperation = createAsyncThunk<
   IInvestmentOperation,
   { state: RootState }>(
     NEW_INVESTMENT_OPERATION,
-    async (operation, thunkAPI) => {
-      const state = thunkAPI.getState();
-      await state.dashboard.db.transaction('rw', state.dashboard.db.investments, state.dashboard.db.operations, async () => {
-        await state.dashboard.db.investments.update(
+    async operation => {
+      await db.transaction('rw', db.investments, db.operations, async () => {
+        await db.investments.update(
           operation.investmentId,
           {
             amount: operation.amountAfter,
@@ -127,28 +122,25 @@ export const newInvestmentOperation = createAsyncThunk<
           },
         );
 
-        await state.dashboard.db.operations.add(operation);
+        await db.operations.add(operation);
       });
       return operation;
     },
   );
 
 // DB
-export const removeDb = createAsyncThunk<InvestmentsDatabase, void, { state: RootState }>(
+export const removeDb = createAsyncThunk<void, void, { state: RootState }>(
   REMOVE_DB,
-  async (_, thunkAPI) => {
-    const state = thunkAPI.getState();
-    await state.dashboard.db.delete();
-    const newDb = new InvestmentsDatabase('investmentsDb');
-    return newDb;
+  async () => {
+    await db.operations.clear();
+    await db.investments.clear();
   },
 );
 
 export const exportDb = createAsyncThunk<Blob, void, { state: RootState }>(
   EXPORT_DB,
-  async (_, thunkAPI) => {
-    const state = thunkAPI.getState();
-    const blob = await exportDB(state.dashboard.db);
+  async () => {
+    const blob = await exportDB(db);
     return blob;
   },
 );
@@ -158,37 +150,33 @@ export const loadFromDb = createAsyncThunk<
   void,
   { state: RootState }>(
     LOAD_FROM_DB,
-    async (_, thunkAPI) => {
-      const state = thunkAPI.getState();
-      const investments = await state.dashboard.db.investments.toArray();
+    async () => {
+      const investments = await db.investments.toArray();
       const filters = defaultFilter();
-      const operations = await state.dashboard.db.operations.toArray();
+      const operations = await db.operations.toArray();
       return [investments, filters, operations];
     },
   );
 
 export const importDb = createAsyncThunk<
-  [InvestmentsDatabase, IInvestment[], IFilterOperations, IInvestmentOperation[]],
+  [IInvestment[], IFilterOperations, IInvestmentOperation[]],
   Blob,
   { state: RootState }>(
     IMPORT_DB,
-    async (db, thunkAPI) => {
-      const state = thunkAPI.getState();
-      await state.dashboard.db.delete();
-      const newDb = await importDB(db) as InvestmentsDatabase;
-      const investments = await newDb.investments.toArray();
+    async dbBlob => {
+      await importInto(db, dbBlob, { clearTablesBeforeImport: true });
+      const investments = await db.investments.toArray();
       const filters = defaultFilter();
-      const operations = await state.dashboard.db.operations.where('date')
+      const operations = await db.operations.where('date')
         .between(filters.from, filters.to).toArray();
 
-      return [newDb, investments, filters, operations];
+      return [investments, filters, operations];
     },
   );
 
 export const investmentProfit = createAction(INVESTMENT_PROFIT);
 
 const initialState: IDashboardState = {
-  db: new InvestmentsDatabase('investmentsDb'),
   investments: [],
   selectedInvestment: null,
   operations: [],
@@ -236,15 +224,12 @@ const reducer = createReducer(initialState,
         state.operations = operations;
       })
       .addCase(importDb.fulfilled, (state, action) => {
-        const [db, investments, filters, operations] = action.payload;
-        state.db = db;
+        const [investments, filters, operations] = action.payload;
         state.investments = investments;
         state.operationFilters = filters;
         state.operations = operations;
       })
-      .addCase(removeDb.fulfilled, (state, action) => {
-        const newDb = action.payload;
-        state.db = newDb;
+      .addCase(removeDb.fulfilled, state => {
         state.investments = [];
         state.operations = [];
         state.operationFilters = null;
@@ -260,6 +245,10 @@ const reducer = createReducer(initialState,
         state.investments = investments;
         state.operationFilters = filters;
         state.operations = operations;
+      })
+      .addCase(loadFromDb.rejected, (state, action) => {
+        console.log(action.error);
+        return state;
       })
       .addDefaultCase(state => state);
   });

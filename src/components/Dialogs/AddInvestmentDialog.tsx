@@ -32,25 +32,25 @@ const AddInvestmentDialog = (props: IDialogProps) => {
     setAbbreviation('');
     setDate(new Date());
     close();
-  }, [close]);
+  }, [close, setAmount, setName, setAbbreviation, setDate]);
 
   const amountChangeHandler = useCallback(($event: ChangeEvent<HTMLInputElement>) => {
     setAmount($event.target.valueAsNumber);
-  }, []);
+  }, [setAmount]);
 
   const newAssetNameChangeHandler = useCallback(($event: ChangeEvent<HTMLInputElement>) => {
     setName($event.target.value);
-  }, []);
+  }, [setName]);
 
   const newAssetAbbreviationChangeHandler = useCallback(($event: ChangeEvent<HTMLInputElement>) => {
     setAbbreviation($event.target.value);
-  }, []);
+  }, [setAbbreviation]);
 
   const dateChangeHandler = useCallback((newDate: Date | null) => {
     if (newDate) {
       setDate(newDate);
     }
-  }, []);
+  }, [setDate]);
 
   const saveInvestmentHandler = useCallback((event: FormEvent) => {
     event.preventDefault();
