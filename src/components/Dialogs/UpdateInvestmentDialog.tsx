@@ -6,9 +6,10 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import AdornmentInput from 'components/UI/AdornmentInput/AdornmentInput';
 import DatePicker from 'components/UI/DatePicker/DatePicker';
-import { FormEvent, ChangeEvent, useState, useContext } from 'react';
-import { DashboardContext } from 'context/DashboardContext';
+import { FormEvent, ChangeEvent, useCallback, useState } from 'react';
 import { IInvestment } from 'common/state.interfaces';
+import { useAppDispatch } from 'store/hooks';
+import { updateInvestment } from 'store/dashboard/dashboardReducer';
 
 interface IUpdateDialogProps {
   investment: IInvestment;
@@ -16,45 +17,35 @@ interface IUpdateDialogProps {
   close: () => void;
 }
 
-interface IUpdateDialogState {
-  amount: number | '';
-  date: Date;
-}
-
 const UpdateInvestmentDialog = (props: IUpdateDialogProps) => {
-  const emptyModal: IUpdateDialogState = {
-    amount: '',
-    date: new Date(),
-  };
-
-  const { updateInvestment } = useContext(DashboardContext);
-
-  const [state, setstate] = useState<IUpdateDialogState>(emptyModal);
-
   const { open, close, investment } = props;
-  const { amount, date } = state;
 
-  const closeHandler = () => {
-    setstate(emptyModal);
+  const [amount, setAmount] = useState<number | ''>('');
+  const [date, setDate] = useState<Date>(new Date());
+
+  const dispatch = useAppDispatch();
+
+  const closeHandler = useCallback(() => {
+    setAmount('');
+    setDate(new Date());
     close();
-  };
+  }, [close]);
 
-  const amountChangeHandler = ($event: ChangeEvent<HTMLInputElement>) => {
-    setstate({ ...state, amount: $event.target.valueAsNumber });
-  };
+  const amountChangeHandler = useCallback(($event: ChangeEvent<HTMLInputElement>) => {
+    setAmount($event.target.valueAsNumber);
+  }, []);
 
-  const dateChangeHandler = (newDate: Date | null) => {
+  const dateChangeHandler = useCallback((newDate: Date | null) => {
     if (newDate) {
-      setstate({ ...state, date: newDate });
+      setDate(newDate);
     }
-  };
+  }, []);
 
-  const updateInvestmentHandler = (event: FormEvent) => {
+  const updateInvestmentHandler = useCallback((event: FormEvent) => {
     event.preventDefault();
-    updateInvestment!(investment, state.amount as number, state.date);
-    setstate(emptyModal);
-    close();
-  };
+    dispatch(updateInvestment({ investment, amount: amount as number, date }));
+    closeHandler();
+  }, [dispatch, closeHandler]);
 
   const assetName = investment?.asset.abbreviation
     ? `${investment?.asset.name} (${investment?.asset.abbreviation})`

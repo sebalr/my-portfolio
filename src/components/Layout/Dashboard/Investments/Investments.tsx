@@ -1,30 +1,29 @@
-import { useCallback, useContext } from 'react';
+import { useCallback } from 'react';
 import { IInvestment, InvestmentOperation } from 'common/state.interfaces';
-import { DashboardContext } from 'context/DashboardContext';
 import Investment from 'components/Layout/Dashboard/Investments/Investment/Investment';
 import FillterInvestments from 'components/Layout/Dashboard/Investments/FilterInvestments/FillterInvestments';
 import { useAppDispatch } from 'store/hooks';
 import { showUpdate, showNewOperation, hideAll } from 'store/modal/modalReducer';
+import { selectInvestment, selectInvestmentOperation } from 'store/dashboard/dashboardReducer';
 
 interface IInvestmentsProps {
   investments: IInvestment[]
 }
 
 const Investments = (props: IInvestmentsProps) => {
-  const { selectInvestment, selectInvestmentOperation } = useContext(DashboardContext);
   const dispatch = useAppDispatch();
 
   const openUpdateDialogHandler = useCallback((investment: IInvestment) => {
-    selectInvestment!(investment);
+    dispatch(selectInvestment(investment));
     dispatch(hideAll());
     dispatch(showUpdate());
-  }, []);
+  }, [dispatch]);
 
-  const openOperationDialogHandler = useCallback((investment: IInvestment, operation: InvestmentOperation) => {
-    selectInvestmentOperation!(investment, operation);
+  const openOperationDialogHandler = useCallback((selectedInvestment: IInvestment, operation: InvestmentOperation) => {
+    dispatch(selectInvestmentOperation({ selectedInvestment, operation }));
     dispatch(hideAll());
     dispatch(showNewOperation());
-  }, []);
+  }, [dispatch]);
 
   const { investments } = props;
   const investmentsList = investments.map(item => (

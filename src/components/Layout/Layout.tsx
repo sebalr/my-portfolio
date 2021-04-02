@@ -1,19 +1,20 @@
-import { useEffect, useContext } from 'react';
+import { useEffect } from 'react';
 import DateFnsUtils from '@date-io/date-fns';
 import { MuiPickersUtilsProvider } from '@material-ui/pickers';
 import Container from '@material-ui/core/Container';
 import Toolbar from 'components/Layout/Toolbar/MyToolbar';
-import { DashboardContext } from 'context/DashboardContext';
 import Dashboard from 'components/Layout/Dashboard/Dashboard';
-import InvestmentsDatabase from 'database/database';
+import { useAppDispatch } from 'store/hooks';
+import { loadFromDb } from 'store/dashboard/dashboardReducer';
 
 import styles from './Layout.module.css';
 
 const Layout = () => {
-  const { loadDataFromDb } = useContext(DashboardContext);
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
-    loadDataFromDb!();
+    console.log('jer');
+    dispatch(loadFromDb());
   }, []);
 
   return (

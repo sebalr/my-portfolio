@@ -1,9 +1,6 @@
 import Layout from 'components/Layout/Layout';
-import DashboardProvider from 'context/DashboardContext';
 
 const App = () => (
-  <DashboardProvider>
-    <Layout />
-  </DashboardProvider>
+  <Layout />
 );
 export default App;

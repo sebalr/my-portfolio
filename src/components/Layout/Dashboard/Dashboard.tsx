@@ -1,7 +1,6 @@
-import { useCallback, useContext } from 'react';
+import { useCallback } from 'react';
 import Summary from 'components/Layout/Dashboard/Summary/Summary';
 import Investments from 'components/Layout/Dashboard/Investments/Investments';
-import { DashboardContext } from 'context/DashboardContext';
 import Welcome from 'components/Layout/Dashboard/Welcome/Welcome';
 import UpdateInvestmentDialog from 'components/Dialogs/UpdateInvestmentDialog';
 import AddInvestmentDialog from 'components/Dialogs/AddInvestmentDialog';
@@ -13,7 +12,9 @@ import { showNew as showNewAction, hideAll } from 'store/modal/modalReducer';
 const Dashboard = () => {
   const { showNew, showUpdate, showNewOperation, showLoadDb } = useAppSelector(state => state.modal);
   const dispatch = useAppDispatch();
-  const { selectedInvestment, investments, operation } = useContext(DashboardContext);
+  const selectedInvestment = useAppSelector(state => state.dashboard.selectedInvestment);
+  const investments = useAppSelector(state => state.dashboard.investments);
+  const operation = useAppSelector(state => state.dashboard.operation);
 
   const closeDialogHandler = useCallback(() => {
     dispatch(hideAll());

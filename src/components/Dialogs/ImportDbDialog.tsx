@@ -4,11 +4,10 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
-import AdornmentInput from 'components/UI/AdornmentInput/AdornmentInput';
-import DatePicker from 'components/UI/DatePicker/DatePicker';
-import { FormEvent, ChangeEvent, useState, useContext } from 'react';
-import { DashboardContext } from 'context/DashboardContext';
+import { FormEvent, useCallback, useState } from 'react';
 import FileUpload from 'components/UI/FileUpload/FileUpload';
+import { useAppDispatch } from 'store/hooks';
+import { importDb } from 'store/dashboard/dashboardReducer';
 
 interface ILoadDbDialogProps {
   open: boolean;
@@ -16,22 +15,23 @@ interface ILoadDbDialogProps {
 }
 
 const ImportDbDialog = (props: ILoadDbDialogProps) => {
-  const { importDb } = useContext(DashboardContext);
+  const dispatch = useAppDispatch();
+
   const [file, setfile] = useState<Blob | null>(null);
 
   const { open, close } = props;
 
-  const fileChangeHandler = (selectedFile: Blob) => {
+  const fileChangeHandler = useCallback((selectedFile: Blob) => {
     setfile(selectedFile);
-  };
+  }, []);
 
-  const loadDbHandler = (event: FormEvent) => {
+  const loadDbHandler = useCallback((event: FormEvent) => {
     event.preventDefault();
     if (file) {
-      importDb!(file);
+      dispatch(importDb(file));
       close();
     }
-  };
+  }, [close, dispatch]);
 
   return (
     <Dialog open={open} onClose={close} aria-labelledby="form-dialog-title">

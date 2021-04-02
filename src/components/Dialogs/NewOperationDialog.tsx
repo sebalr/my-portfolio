@@ -6,9 +6,10 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import AdornmentInput from 'components/UI/AdornmentInput/AdornmentInput';
 import DatePicker from 'components/UI/DatePicker/DatePicker';
-import { FormEvent, ChangeEvent, useState, useContext } from 'react';
-import { DashboardContext } from 'context/DashboardContext';
+import { FormEvent, ChangeEvent, useState, useCallback } from 'react';
 import { IInvestment, IInvestmentOperation, InvestmentOperation } from 'common/state.interfaces';
+import { useAppDispatch } from 'store/hooks';
+import { newInvestmentOperation } from 'store/dashboard/dashboardReducer';
 
 interface IOperationDialogProps {
   investment: IInvestment;
@@ -17,70 +18,66 @@ interface IOperationDialogProps {
   close: () => void;
 }
 
-interface IOperationDialogState {
+interface ISyncAmount {
   amount: number | '';
   amountBefore: number | '';
   amountAfter: number | '';
-  date: Date;
 }
 
+const syncValues = (amounts: ISyncAmount, operation: InvestmentOperation): ISyncAmount => {
+  const values = { ...amounts };
+  values.amountBefore = Number.isNaN(values.amountBefore) ? '' : values.amountBefore;
+  values.amount = Number.isNaN(values.amount) ? '' : values.amount;
+  if (operation === InvestmentOperation.increase) {
+    values.amountAfter = Number(values.amountBefore) + Number(values.amount);
+  } else if (operation === InvestmentOperation.decrease) {
+    values.amountAfter = Number(values.amountBefore) - Number(values.amount);
+  }
+  return values;
+};
+
 const NewOperationDialog = (props: IOperationDialogProps) => {
-  const emptyModal: IOperationDialogState = {
-    amount: '',
-    amountBefore: '',
-    amountAfter: '',
-    date: new Date(),
-  };
-
-  const { newInvestmentOperation } = useContext(DashboardContext);
-
-  const [state, setstate] = useState<IOperationDialogState>(emptyModal);
+  const dispacth = useAppDispatch();
+  const [amount, setAmount] = useState<number | ''>('');
+  const [amountBefore, setAmountBefore] = useState<number | ''>('');
+  const [amountAfter, setamountAfter] = useState<number | ''>('');
+  const [date, setDate] = useState<Date>(new Date());
 
   const { investment, operation, open, close } = props;
-  const { amount, date, amountAfter, amountBefore } = state;
 
   if (!operation) {
     return null;
   }
 
-  const closeHandler = () => {
-    setstate(emptyModal);
+  const closeHandler = useCallback(() => {
+    setAmount('');
+    setAmountBefore('');
+    setamountAfter('');
+    setDate(new Date());
     close();
-  };
+  }, [close]);
 
-  const syncValues = (newState: IOperationDialogState): IOperationDialogState => {
-    const auxState = { ...newState };
-    auxState.amountBefore = Number.isNaN(auxState.amountBefore) ? '' : auxState.amountBefore;
-    auxState.amount = Number.isNaN(auxState.amount) ? '' : auxState.amount;
-    if (operation === InvestmentOperation.increase) {
-      auxState.amountAfter = Number(auxState.amountBefore) + Number(auxState.amount);
-    } else if (operation === InvestmentOperation.decrease) {
-      auxState.amountAfter = Number(auxState.amountBefore) - Number(auxState.amount);
-    }
-    return auxState;
-  };
+  const amountChangeHandler = useCallback(($event: ChangeEvent<HTMLInputElement>) => {
+    const values = syncValues({ amount: $event.target.valueAsNumber, amountBefore, amountAfter }, operation);
+    setAmount(values.amount);
+    setAmountBefore(values.amountBefore);
+    setamountAfter(values.amountAfter);
+  }, [operation, amountBefore, amountAfter]);
 
-  const amountChangeHandler = ($event: ChangeEvent<HTMLInputElement>) => {
-    setstate(prevState => {
-      const newState = { ...prevState, amount: $event.target.valueAsNumber };
-      return syncValues(newState);
-    });
-  };
+  const ammountBeforeChangeHandler = useCallback(($event: ChangeEvent<HTMLInputElement>) => {
+    const values = syncValues({ amountBefore: $event.target.valueAsNumber, amount, amountAfter }, operation);
+    setAmount(values.amount);
+    setAmountBefore(values.amountBefore);
+    setamountAfter(values.amountAfter);
+  }, [operation, amount, amountAfter]);
 
-  const ammountBeforeChangeHandler = ($event: ChangeEvent<HTMLInputElement>) => {
-    setstate(prevState => {
-      const newState = { ...prevState, amountBefore: $event.target.valueAsNumber };
-      return syncValues(newState);
-    });
-  };
-
-  const dateChangeHandler = (newDate: Date | null) => {
+  const dateChangeHandler = useCallback((newDate: Date | null) => {
     if (newDate) {
-      setstate({ ...state, date: newDate });
+      setDate(newDate);
     }
-  };
+  }, []);
 
-  const newOperationHandler = (event: FormEvent) => {
+  const newOperationHandler = useCallback((event: FormEvent) => {
     event.preventDefault();
     const newOperation: IInvestmentOperation = {
       investmentId: investment.id!,
@@ -91,10 +88,9 @@ const NewOperationDialog = (props: IOperationDialogProps) => {
       amountAfter: Number(amountAfter),
       operation: operation!,
     };
-    newInvestmentOperation!(newOperation);
-    setstate(emptyModal);
-    close();
-  };
+    dispacth(newInvestmentOperation(newOperation));
+    closeHandler();
+  }, [dispacth, closeHandler]);
 
   let operationLabel = 'ERROR!';
   if (operation === InvestmentOperation.increase) {

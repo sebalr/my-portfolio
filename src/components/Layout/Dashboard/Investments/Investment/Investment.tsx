@@ -1,10 +1,11 @@
-import { memo, useContext } from 'react';
+import { memo, useCallback } from 'react';
 import { IInvestment, InvestmentOperation } from 'common/state.interfaces';
 import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
 import DeleteIcon from '@material-ui/icons/Delete';
-import { DashboardContext } from 'context/DashboardContext';
 import ProfitLabel from 'components/Layout/Dashboard/Investments/Investment/ProfitLabel/ProfitLabel';
+import { useAppDispatch } from 'store/hooks';
+import { removeInvestment } from 'store/dashboard/dashboardReducer';
 
 import styles from './Investment.module.css';
 
@@ -18,23 +19,23 @@ interface IInvestmentProps {
 
 const Investment = (props: IInvestmentProps) => {
   const { investment, update, newOperation } = props;
-  const { removeInvestment } = useContext(DashboardContext);
+  const dispatch = useAppDispatch();
 
-  const removeInvestmentHandler = () => {
-    removeInvestment!(investment.id!);
-  };
+  const removeInvestmentHandler = useCallback(() => {
+    dispatch(removeInvestment(investment.id!));
+  }, [investment]);
 
-  const openUpdateInvestmentHandler = () => {
+  const openUpdateInvestmentHandler = useCallback(() => {
     update(investment);
-  };
+  }, [update, investment]);
 
-  const openIncreaseOperationHandler = () => {
+  const openIncreaseOperationHandler = useCallback(() => {
     newOperation(investment, InvestmentOperation.increase);
-  };
+  }, [newOperation, investment, InvestmentOperation]);
 
-  const openDecreaseOperationHandler = () => {
+  const openDecreaseOperationHandler = useCallback(() => {
     newOperation(investment, InvestmentOperation.decrease);
-  };
+  }, [newOperation, investment, InvestmentOperation]);
 
   return (
     <div className={styles.row}>

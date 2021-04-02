@@ -1,6 +1,6 @@
-import { DashboardContext } from 'context/DashboardContext';
-import { useContext, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import calculateProfit from 'helpers/investment';
+import { useAppSelector } from 'store/hooks';
 
 import styles from './ProfitLabel.module.css';
 
@@ -11,7 +11,7 @@ interface IProfitLabelProps {
 const ProfitLabel = (props: IProfitLabelProps) => {
   const { investmentId } = props;
   const [profit, setProfit] = useState<number>();
-  const { operations } = useContext(DashboardContext);
+  const operations = useAppSelector(state => state.dashboard.operations);
 
   useEffect(() => {
     const loadProfit = async () => {

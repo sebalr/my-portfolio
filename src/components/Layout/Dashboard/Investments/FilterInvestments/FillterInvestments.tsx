@@ -1,37 +1,35 @@
-import { useContext, useEffect, useState } from 'react';
+import { useCallback, useEffect } from 'react';
 import DatePicker from 'components/UI/DatePicker/DatePicker';
-import { DashboardContext } from 'context/DashboardContext';
-
-interface IFilterState {
-  from: Date;
-  to: Date;
-}
+import { useAppDispatch, useAppSelector } from 'store/hooks';
+import { filterInvestmentOperations } from 'store/dashboard/dashboardReducer';
 
 const FillterInvestments = () => {
-  const { filterOperations, operationFilters } = useContext(DashboardContext);
-
-  const refreshOperations = () => {
-    filterOperations!({ from: operationFilters!.from, to: operationFilters!.to });
-  };
+  const operationFilters = useAppSelector(state => state.dashboard.operationFilters);
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
     const to = new Date();
     const from = new Date();
     from.setMonth(from.getMonth() - 1);
 
-    filterOperations!({ ...operationFilters!, from, to });
+    dispatch(filterInvestmentOperations({ ...operationFilters, from, to }));
   }, []);
 
-  const toDateChangeHandler = (newDate: Date | null) => {
-    if (newDate) {
-      filterOperations!({ ...operationFilters!, to: newDate });
+  const toDateChangeHandler = useCallback((newDate: Date | null) => {
+    if (newDate && operationFilters) {
+      dispatch(filterInvestmentOperations({ ...operationFilters, to: newDate }));
     }
-  };
-  const fromDateChangeHandler = (newDate: Date | null) => {
-    if (newDate) {
-      filterOperations!({ ...operationFilters!, from: newDate });
+  }, [dispatch, operationFilters]);
+
+  const fromDateChangeHandler = useCallback((newDate: Date | null) => {
+    if (newDate && operationFilters) {
+      dispatch(filterInvestmentOperations({ ...operationFilters, from: newDate }));
     }
-  };
+  }, [dispatch, operationFilters]);
+
+  if (!operationFilters) {
+    return null;
+  }
 
   return (
     <div className="form-row">
@@ -39,14 +37,14 @@ const FillterInvestments = () => {
         size="small"
         inputVariant="outlined"
         label="From"
-        value={operationFilters!.from}
+        value={operationFilters.from}
         change={fromDateChangeHandler}
       />
       <DatePicker
         size="small"
         inputVariant="outlined"
         label="To"
-        value={operationFilters!.to}
+        value={operationFilters.to}
         change={toDateChangeHandler}
       />
     </div>

@@ -7,73 +7,65 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import AdornmentInput from 'components/UI/AdornmentInput/AdornmentInput';
 import DatePicker from 'components/UI/DatePicker/DatePicker';
-import { FormEvent, ChangeEvent, useState, useContext } from 'react';
-import { DashboardContext } from 'context/DashboardContext';
+import { FormEvent, ChangeEvent, useState, useCallback } from 'react';
+import { useAppDispatch } from 'store/hooks';
+import { addInvestment } from 'store/dashboard/dashboardReducer';
 
 interface IDialogProps {
   open: boolean;
   close: () => void;
 }
 
-interface IAddDialogState {
-  amount: number | '';
-  date: Date;
-  asset: any;
-  name: string;
-  abbreviation: string;
-}
-
 const AddInvestmentDialog = (props: IDialogProps) => {
-  const emptyModal: IAddDialogState = {
-    amount: '',
-    date: new Date(),
-    asset: null,
-    name: '',
-    abbreviation: '',
-  };
+  const dispatch = useAppDispatch();
 
-  const { addInvestment } = useContext(DashboardContext);
-
-  const [state, setstate] = useState<IAddDialogState>(emptyModal);
+  const [amount, setAmount] = useState<number | ''>('');
+  const [name, setName] = useState<string>('');
+  const [abbreviation, setAbbreviation] = useState<string>('');
+  const [date, setDate] = useState<Date>(new Date());
 
   const { open, close } = props;
-  const { amount, date, asset, name, abbreviation } = state;
 
-  const closeHandler = () => {
-    setstate(emptyModal);
+  const closeHandler = useCallback(() => {
+    setAmount('');
+    setName('');
+    setAbbreviation('');
+    setDate(new Date());
     close();
-  };
+  }, [close]);
 
-  const amountChangeHandler = ($event: ChangeEvent<HTMLInputElement>) => {
-    setstate({ ...state, amount: $event.target.valueAsNumber });
-  };
+  const amountChangeHandler = useCallback(($event: ChangeEvent<HTMLInputElement>) => {
+    setAmount($event.target.valueAsNumber);
+  }, []);
 
-  const dateChangeHandler = (newDate: Date | null) => {
+  const newAssetNameChangeHandler = useCallback(($event: ChangeEvent<HTMLInputElement>) => {
+    setName($event.target.value);
+  }, []);
+
+  const newAssetAbbreviationChangeHandler = useCallback(($event: ChangeEvent<HTMLInputElement>) => {
+    setAbbreviation($event.target.value);
+  }, []);
+
+  const dateChangeHandler = useCallback((newDate: Date | null) => {
     if (newDate) {
-      setstate({ ...state, date: newDate });
+      setDate(newDate);
     }
-  };
-  const newAssetNameChangeHandler = ($event: ChangeEvent<HTMLInputElement>) => {
-    setstate({ ...state, name: $event.target.value });
-  };
+  }, []);
 
-  const newAssetAbbreviationChangeHandler = ($event: ChangeEvent<HTMLInputElement>) => {
-    setstate({ ...state, abbreviation: $event.target.value });
-  };
-
-  const saveInvestmentHandler = (event: FormEvent) => {
+  const saveInvestmentHandler = useCallback((event: FormEvent) => {
     event.preventDefault();
-    addInvestment!({
+    const newInvestment = {
       asset: {
-        name: state.name,
-        abbreviation: state.abbreviation,
+        name,
+        abbreviation,
       },
-      amount: state.amount as number,
-      date: state.date,
-    });
-    setstate(emptyModal);
-    close();
-  };
+      amount: amount as number,
+      date,
+    };
+    dispatch(addInvestment(newInvestment));
+
+    closeHandler();
+  }, [closeHandler, dispatch]);
 
   return (
     <Dialog open={open} onClose={closeHandler} aria-labelledby="form-dialog-title">

@@ -7,43 +7,6 @@ export enum InvestmentOperation {
   update
 }
 
-export interface IDialogsState {
-  updateDialogOn: boolean;
-  newOperationOn: boolean;
-  newDialogOn: boolean;
-  loadDbDialogOn: boolean;
-}
-
-export interface IModalProviderState {
-  dialogsState: IDialogsState
-}
-
-export interface IDashboardContextState {
-  investments: Array<IInvestment>;
-  selectedInvestment: IInvestment | null;
-  operations: Array<IInvestmentOperation>;
-}
-
-export interface IDashboardContext {
-  investments: Array<IInvestment>;
-  selectedInvestment: IInvestment | null;
-  operations: Array<IInvestmentOperation>;
-  operation: InvestmentOperation;
-  operationFilters: IFilterOperations | null;
-  addInvestment?: (investment: IInvestment) => void;
-  removeInvestment?: (id: number) => void;
-  updateInvestment?: (investment: IInvestment, amount: number, date: Date) => void;
-  newInvestmentOperation?: (operation: IInvestmentOperation) => void;
-  loadDataFromDb?: () => Promise<void>;
-  exportDb?: () => Promise<void>;
-  importDb?: (blob: Blob) => Promise<void>;
-  removeDb?: () => Promise<void>;
-  investmentProfit?: (investmentId: number) => Promise<number | undefined>;
-  selectInvestment?: (investment: IInvestment) => void;
-  selectInvestmentOperation?: (selectedInvestment: IInvestment, operation: InvestmentOperation) => void;
-  filterOperations?: (filters: IFilterOperations) => Promise<void>;
-}
-
 export interface IInvestment {
   id?: number,
   asset: IAsset;
