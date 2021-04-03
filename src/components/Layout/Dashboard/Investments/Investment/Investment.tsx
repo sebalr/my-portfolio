@@ -5,7 +5,7 @@ import IconButton from '@material-ui/core/IconButton';
 import DeleteIcon from '@material-ui/icons/Delete';
 import ProfitLabel from 'components/Layout/Dashboard/Investments/Investment/ProfitLabel/ProfitLabel';
 import { useAppDispatch } from 'store/hooks';
-import { removeInvestment } from 'store/dashboard/dashboardReducer';
+import { removeInvestment } from 'components/Layout/Dashboard/dashboardReducer';
 
 import styles from './Investment.module.css';
 

@@ -7,7 +7,7 @@ import AddInvestmentDialog from 'components/Dialogs/AddInvestmentDialog';
 import NewOperationDialog from 'components/Dialogs/NewOperationDialog';
 import ImportDbDialog from 'components/Dialogs/ImportDbDialog';
 import { useAppDispatch, useAppSelector } from 'store/hooks';
-import { showNew as showNewAction, hideAll } from 'store/modal/modalReducer';
+import { showNew as showNewAction, hideAll } from 'components/Dialogs/modalReducer';
 
 const Dashboard = () => {
   const { showNew, showUpdate, showNewOperation, showLoadDb } = useAppSelector(state => state.modal);

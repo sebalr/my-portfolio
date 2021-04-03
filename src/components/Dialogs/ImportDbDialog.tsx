@@ -7,7 +7,7 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import { FormEvent, useCallback, useState } from 'react';
 import FileUpload from 'components/UI/FileUpload/FileUpload';
 import { useAppDispatch } from 'store/hooks';
-import { importDb } from 'store/dashboard/dashboardReducer';
+import { importDb } from 'components/Layout/Dashboard/dashboardReducer';
 
 interface ILoadDbDialogProps {
   open: boolean;

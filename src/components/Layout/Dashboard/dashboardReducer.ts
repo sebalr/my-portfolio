@@ -16,9 +16,10 @@ import {
   SELECT_INVESTMENT,
   SELECT_INVESTMENT_OPERATION,
   UPDATE_INVESTMENT,
-} from 'store/dashboard/dashboardActionTypes';
+} from 'components/Layout/Dashboard/dashboardActionTypes';
 import { IDashboardState, RootState } from 'store/types';
 import db from 'database/database';
+import { toSerializableFilters, toSerializableInvestment, toSerializableOperation } from 'helpers/dashboard';
 
 // Investment
 export const addInvestment = createAsyncThunk<
@@ -189,11 +190,11 @@ const reducer = createReducer(initialState,
     builder
       .addCase(addInvestment.fulfilled, (state, action) => {
         const [investment, operation] = action.payload;
-        state.investments.push(investment);
-        state.operations.push(operation);
+        state.investments.push(toSerializableInvestment(investment));
+        state.operations.push(toSerializableOperation(operation));
       })
       .addCase(updateInvestment.fulfilled, (state, action) => {
-        const operation = action.payload;
+        const operation = toSerializableOperation(action.payload);
         const investmentIndex = state.investments.findIndex(x => x.id === operation.investmentId);
         state.investments[investmentIndex].amount = operation.amountAfter;
         state.investments[investmentIndex].date = operation.date;
@@ -204,10 +205,10 @@ const reducer = createReducer(initialState,
         state.operations = state.operations.filter(item => item.investmentId !== id);
       })
       .addCase(selectInvestment, (state, action) => {
-        state.selectedInvestment = action.payload;
+        state.selectedInvestment = toSerializableInvestment(action.payload);
       })
       .addCase(newInvestmentOperation.fulfilled, (state, action) => {
-        const operation = action.payload;
+        const operation = toSerializableOperation(action.payload);
         const investmentIndex = state.investments.findIndex(x => x.id === operation.investmentId);
         state.investments[investmentIndex].amount = operation.amountAfter;
         state.investments[investmentIndex].date = operation.date;
@@ -215,19 +216,19 @@ const reducer = createReducer(initialState,
       })
       .addCase(selectInvestmentOperation, (state, action) => {
         const { selectedInvestment, operation } = action.payload;
-        state.selectedInvestment = selectedInvestment;
+        state.selectedInvestment = toSerializableInvestment(selectedInvestment);
         state.operation = operation;
       })
       .addCase(filterInvestmentOperations.fulfilled, (state, action) => {
         const [filters, operations] = action.payload;
-        state.operationFilters = filters;
-        state.operations = operations;
+        state.operationFilters = toSerializableFilters(filters);
+        state.operations = operations.map(x => toSerializableOperation(x));
       })
       .addCase(importDb.fulfilled, (state, action) => {
         const [investments, filters, operations] = action.payload;
-        state.investments = investments;
-        state.operationFilters = filters;
-        state.operations = operations;
+        state.investments = investments.map(x => toSerializableInvestment(x));
+        state.operationFilters = toSerializableFilters(filters);
+        state.operations = operations.map(x => toSerializableOperation(x));
       })
       .addCase(removeDb.fulfilled, state => {
         state.investments = [];
@@ -242,13 +243,9 @@ const reducer = createReducer(initialState,
       })
       .addCase(loadFromDb.fulfilled, (state, action) => {
         const [investments, filters, operations] = action.payload;
-        state.investments = investments;
-        state.operationFilters = filters;
-        state.operations = operations;
-      })
-      .addCase(loadFromDb.rejected, (state, action) => {
-        console.log(action.error);
-        return state;
+        state.investments = investments.map(x => toSerializableInvestment(x));
+        state.operationFilters = toSerializableFilters(filters);
+        state.operations = operations.map(x => toSerializableOperation(x));
       })
       .addDefaultCase(state => state);
   });

@@ -9,7 +9,7 @@ import AdornmentInput from 'components/UI/AdornmentInput/AdornmentInput';
 import DatePicker from 'components/UI/DatePicker/DatePicker';
 import { FormEvent, ChangeEvent, useState, useCallback } from 'react';
 import { useAppDispatch } from 'store/hooks';
-import { addInvestment } from 'store/dashboard/dashboardReducer';
+import { addInvestment } from 'components/Layout/Dashboard/dashboardReducer';
 
 interface IDialogProps {
   open: boolean;

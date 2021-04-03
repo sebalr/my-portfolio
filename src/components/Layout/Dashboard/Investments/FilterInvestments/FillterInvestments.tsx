@@ -1,7 +1,7 @@
 import { useCallback, useEffect } from 'react';
 import DatePicker from 'components/UI/DatePicker/DatePicker';
 import { useAppDispatch, useAppSelector } from 'store/hooks';
-import { filterInvestmentOperations } from 'store/dashboard/dashboardReducer';
+import { filterInvestmentOperations } from 'components/Layout/Dashboard/dashboardReducer';
 
 const FillterInvestments = () => {
   const operationFilters = useAppSelector(state => state.dashboard.operationFilters);

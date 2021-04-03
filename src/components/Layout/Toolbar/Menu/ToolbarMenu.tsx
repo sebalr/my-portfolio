@@ -4,8 +4,8 @@ import MenuItem from '@material-ui/core/MenuItem';
 import IconButton from '@material-ui/core/IconButton';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import { useAppDispatch } from 'store/hooks';
-import { showLoadDb } from 'store/modal/modalReducer';
-import { exportDb, removeDb } from 'store/dashboard/dashboardReducer';
+import { showLoadDb } from 'components/Dialogs/modalReducer';
+import { exportDb, removeDb } from 'components/Layout/Dashboard/dashboardReducer';
 
 const ToolbarMenu = () => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);

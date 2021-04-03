@@ -9,7 +9,7 @@ import DatePicker from 'components/UI/DatePicker/DatePicker';
 import { FormEvent, ChangeEvent, useState, useCallback } from 'react';
 import { IInvestment, IInvestmentOperation, InvestmentOperation } from 'common/state.interfaces';
 import { useAppDispatch } from 'store/hooks';
-import { newInvestmentOperation } from 'store/dashboard/dashboardReducer';
+import { newInvestmentOperation } from 'components/Layout/Dashboard/dashboardReducer';
 
 interface IOperationDialogProps {
   investment: IInvestment;

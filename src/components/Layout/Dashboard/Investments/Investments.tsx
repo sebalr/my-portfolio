@@ -3,8 +3,8 @@ import { IInvestment, InvestmentOperation } from 'common/state.interfaces';
 import Investment from 'components/Layout/Dashboard/Investments/Investment/Investment';
 import FillterInvestments from 'components/Layout/Dashboard/Investments/FilterInvestments/FillterInvestments';
 import { useAppDispatch } from 'store/hooks';
-import { showUpdate, showNewOperation, hideAll } from 'store/modal/modalReducer';
-import { selectInvestment, selectInvestmentOperation } from 'store/dashboard/dashboardReducer';
+import { selectInvestment, selectInvestmentOperation } from 'components/Layout/Dashboard/dashboardReducer';
+import { hideAll, showNewOperation, showUpdate } from 'components/Dialogs/modalReducer';
 
 interface IInvestmentsProps {
   investments: IInvestment[]

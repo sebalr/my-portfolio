@@ -5,7 +5,7 @@ import Container from '@material-ui/core/Container';
 import Toolbar from 'components/Layout/Toolbar/MyToolbar';
 import Dashboard from 'components/Layout/Dashboard/Dashboard';
 import { useAppDispatch } from 'store/hooks';
-import { loadFromDb } from 'store/dashboard/dashboardReducer';
+import { loadFromDb } from 'components/Layout/Dashboard/dashboardReducer';
 
 import styles from './Layout.module.css';
 

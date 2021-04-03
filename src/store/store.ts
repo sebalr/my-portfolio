@@ -1,6 +1,6 @@
 import { configureStore } from '@reduxjs/toolkit';
-import modal from 'store/modal/modalReducer';
-import dashboard from 'store/dashboard/dashboardReducer';
+import modal from 'components/Dialogs/modalReducer';
+import dashboard from 'components/Layout/Dashboard/dashboardReducer';
 
 const store = configureStore({ reducer: { modal, dashboard } });
 
