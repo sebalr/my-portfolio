@@ -91,7 +91,7 @@ const NewOperationDialog = (props: IOperationDialogProps) => {
     };
     dispacth(newInvestmentOperation(toSerializableOperation(newOperation)));
     closeHandler();
-  }, [dispacth, closeHandler, investment.amount, amount, amountBefore, amountAfter, operation]);
+  }, [dispacth, closeHandler, investment, amount, amountBefore, amountAfter, operation]);
 
   let operationLabel = 'ERROR!';
   if (operation === InvestmentOperation.increase) {

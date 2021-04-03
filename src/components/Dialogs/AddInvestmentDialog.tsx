@@ -66,7 +66,7 @@ const AddInvestmentDialog = (props: IDialogProps) => {
     dispatch(addInvestment(toSerializableInvestment(newInvestment)));
 
     closeHandler();
-  }, [closeHandler, dispatch]);
+  }, [closeHandler, dispatch, name, abbreviation, amount, date]);
 
   return (
     <Dialog open={open} onClose={closeHandler} aria-labelledby="form-dialog-title">
