@@ -5,6 +5,7 @@ import FillterInvestments from 'components/Layout/Dashboard/Investments/FilterIn
 import { useAppDispatch } from 'store/hooks';
 import { selectInvestment, selectInvestmentOperation } from 'components/Layout/Dashboard/dashboardReducer';
 import { hideAll, showNewOperation, showUpdate } from 'components/Dialogs/modalReducer';
+import { toSerializableInvestment } from 'helpers/dashboard';
 
 interface IInvestmentsProps {
   investments: IInvestment[]
@@ -14,13 +15,13 @@ const Investments = (props: IInvestmentsProps) => {
   const dispatch = useAppDispatch();
 
   const openUpdateDialogHandler = useCallback((investment: IInvestment) => {
-    dispatch(selectInvestment(investment));
+    dispatch(selectInvestment(toSerializableInvestment(investment)));
     dispatch(hideAll());
     dispatch(showUpdate());
   }, [dispatch]);
 
-  const openOperationDialogHandler = useCallback((selectedInvestment: IInvestment, operation: InvestmentOperation) => {
-    dispatch(selectInvestmentOperation({ selectedInvestment, operation }));
+  const openOperationDialogHandler = useCallback((investment: IInvestment, operation: InvestmentOperation) => {
+    dispatch(selectInvestmentOperation({ selectedInvestment: toSerializableInvestment(investment), operation }));
     dispatch(hideAll());
     dispatch(showNewOperation());
   }, [dispatch]);

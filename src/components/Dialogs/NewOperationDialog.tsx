@@ -10,6 +10,7 @@ import { FormEvent, ChangeEvent, useState, useCallback } from 'react';
 import { IInvestment, IInvestmentOperation, InvestmentOperation } from 'common/state.interfaces';
 import { useAppDispatch } from 'store/hooks';
 import { newInvestmentOperation } from 'components/Layout/Dashboard/dashboardReducer';
+import { toSerializableOperation } from 'helpers/dashboard';
 
 interface IOperationDialogProps {
   investment: IInvestment;
@@ -88,9 +89,9 @@ const NewOperationDialog = (props: IOperationDialogProps) => {
       amountAfter: Number(amountAfter),
       operation: operation!,
     };
-    dispacth(newInvestmentOperation(newOperation));
+    dispacth(newInvestmentOperation(toSerializableOperation(newOperation)));
     closeHandler();
-  }, [dispacth, closeHandler]);
+  }, [dispacth, closeHandler, investment.amount, amount, amountBefore, amountAfter, operation]);
 
   let operationLabel = 'ERROR!';
   if (operation === InvestmentOperation.increase) {
@@ -115,6 +116,7 @@ const NewOperationDialog = (props: IOperationDialogProps) => {
           />
           <div className="flex-row form-row">
             <AdornmentInput
+              inputId="total-before"
               type="number"
               fullWidth
               label="Total before operation"
@@ -123,6 +125,7 @@ const NewOperationDialog = (props: IOperationDialogProps) => {
               change={ammountBeforeChangeHandler}
             />
             <AdornmentInput
+              inputId="total-amount"
               type="number"
               fullWidth
               label="Operation amount"

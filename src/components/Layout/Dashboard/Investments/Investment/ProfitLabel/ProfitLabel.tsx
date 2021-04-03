@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import calculateProfit from 'helpers/investment';
 import { useAppSelector } from 'store/hooks';
+import { selectDeserializedOperations } from 'components/Layout/Dashboard/dashboardReducer';
 
 import styles from './ProfitLabel.module.css';
 
@@ -11,7 +12,7 @@ interface IProfitLabelProps {
 const ProfitLabel = (props: IProfitLabelProps) => {
   const { investmentId } = props;
   const [profit, setProfit] = useState<number>();
-  const operations = useAppSelector(state => state.dashboard.operations);
+  const operations = useAppSelector(selectDeserializedOperations);
 
   useEffect(() => {
     const loadProfit = async () => {

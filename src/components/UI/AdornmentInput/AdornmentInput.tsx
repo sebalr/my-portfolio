@@ -10,12 +10,13 @@ interface IAdornmentInputProps {
   value: string | number | undefined;
   adornment: string | ReactNode;
   fullWidth: boolean | undefined;
+  inputId?: string;
   /* eslint-disable-next-line */
   change: (event: ChangeEvent<HTMLInputElement>) => void
 }
 
 const AdornmentInput = (props: IAdornmentInputProps) => {
-  const { type, label, value, adornment, change: handleChange, fullWidth } = props;
+  const { type, label, value, adornment, change: handleChange, fullWidth, inputId } = props;
   return (
     <FormControl
       margin="normal"
@@ -25,7 +26,7 @@ const AdornmentInput = (props: IAdornmentInputProps) => {
       <InputLabel htmlFor="asset-amount">{label}</InputLabel>
       <FilledInput
         type={type}
-        id="asset-amount"
+        id={inputId}
         value={value}
         onChange={handleChange}
         startAdornment={<InputAdornment position="start">{adornment}</InputAdornment>}

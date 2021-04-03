@@ -8,12 +8,13 @@ import NewOperationDialog from 'components/Dialogs/NewOperationDialog';
 import ImportDbDialog from 'components/Dialogs/ImportDbDialog';
 import { useAppDispatch, useAppSelector } from 'store/hooks';
 import { showNew as showNewAction, hideAll } from 'components/Dialogs/modalReducer';
+import { selectDeserializedInvestments, selectDeserializedSelectedInvestment } from 'components/Layout/Dashboard/dashboardReducer';
 
 const Dashboard = () => {
   const { showNew, showUpdate, showNewOperation, showLoadDb } = useAppSelector(state => state.modal);
   const dispatch = useAppDispatch();
-  const selectedInvestment = useAppSelector(state => state.dashboard.selectedInvestment);
-  const investments = useAppSelector(state => state.dashboard.investments);
+  const selectedInvestment = useAppSelector(selectDeserializedSelectedInvestment);
+  const investments = useAppSelector(selectDeserializedInvestments);
   const operation = useAppSelector(state => state.dashboard.operation);
 
   const closeDialogHandler = useCallback(() => {

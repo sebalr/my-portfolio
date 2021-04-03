@@ -42,7 +42,6 @@ export interface IDashboardState {
   operation: InvestmentOperation;
 }
 
-// Infer the `RootState` and `AppDispatch` types from the store itself
 export type RootState = {
   dashboard: IDashboardState,
   modal: IModalState

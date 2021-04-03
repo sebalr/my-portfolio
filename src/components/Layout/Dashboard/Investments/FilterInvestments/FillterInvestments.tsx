@@ -1,10 +1,11 @@
 import { useCallback, useEffect } from 'react';
 import DatePicker from 'components/UI/DatePicker/DatePicker';
 import { useAppDispatch, useAppSelector } from 'store/hooks';
-import { filterInvestmentOperations } from 'components/Layout/Dashboard/dashboardReducer';
+import { filterInvestmentOperations, selectDeserializedFilters } from 'components/Layout/Dashboard/dashboardReducer';
+import { toSerializableFilters } from 'helpers/dashboard';
 
 const FillterInvestments = () => {
-  const operationFilters = useAppSelector(state => state.dashboard.operationFilters);
+  const operationFilters = useAppSelector(selectDeserializedFilters);
   const dispatch = useAppDispatch();
 
   useEffect(() => {
@@ -12,18 +13,18 @@ const FillterInvestments = () => {
     const from = new Date();
     from.setMonth(from.getMonth() - 1);
 
-    dispatch(filterInvestmentOperations({ ...operationFilters, from, to }));
+    dispatch(filterInvestmentOperations(toSerializableFilters({ ...operationFilters, from, to })));
   }, []);
 
   const toDateChangeHandler = useCallback((newDate: Date | null) => {
     if (newDate && operationFilters) {
-      dispatch(filterInvestmentOperations({ ...operationFilters, to: newDate }));
+      dispatch(filterInvestmentOperations(toSerializableFilters({ ...operationFilters, to: newDate })));
     }
   }, [dispatch, operationFilters]);
 
   const fromDateChangeHandler = useCallback((newDate: Date | null) => {
     if (newDate && operationFilters) {
-      dispatch(filterInvestmentOperations({ ...operationFilters, from: newDate }));
+      dispatch(filterInvestmentOperations(toSerializableFilters({ ...operationFilters, from: newDate })));
     }
   }, [dispatch, operationFilters]);
 

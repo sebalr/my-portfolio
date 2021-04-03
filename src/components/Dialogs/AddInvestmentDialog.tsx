@@ -10,6 +10,7 @@ import DatePicker from 'components/UI/DatePicker/DatePicker';
 import { FormEvent, ChangeEvent, useState, useCallback } from 'react';
 import { useAppDispatch } from 'store/hooks';
 import { addInvestment } from 'components/Layout/Dashboard/dashboardReducer';
+import { toSerializableInvestment } from 'helpers/dashboard';
 
 interface IDialogProps {
   open: boolean;
@@ -62,7 +63,7 @@ const AddInvestmentDialog = (props: IDialogProps) => {
       amount: amount as number,
       date,
     };
-    dispatch(addInvestment(newInvestment));
+    dispatch(addInvestment(toSerializableInvestment(newInvestment)));
 
     closeHandler();
   }, [closeHandler, dispatch]);
@@ -98,6 +99,7 @@ const AddInvestmentDialog = (props: IDialogProps) => {
             change={dateChangeHandler}
           />
           <AdornmentInput
+            inputId="amount"
             type="number"
             fullWidth
             label="Amount"

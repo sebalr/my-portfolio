@@ -1,8 +1,9 @@
-import { createAction, createAsyncThunk, createReducer } from '@reduxjs/toolkit';
+import { createAction, createAsyncThunk, createReducer, createSelector } from '@reduxjs/toolkit';
 import { IFilterOperations, IInvestment, IInvestmentOperation, InvestmentOperation } from 'common/state.interfaces';
 import { exportDB, importInto } from 'dexie-export-import';
 import download from 'downloadjs';
 import { defaultFilter } from 'helpers/investment';
+import db from 'database/database';
 import {
   ADD_INVESTMENT,
   EXPORT_DB,
@@ -17,18 +18,30 @@ import {
   SELECT_INVESTMENT_OPERATION,
   UPDATE_INVESTMENT,
 } from 'components/Layout/Dashboard/dashboardActionTypes';
-import { IDashboardState, RootState } from 'store/types';
-import db from 'database/database';
-import { toSerializableFilters, toSerializableInvestment, toSerializableOperation } from 'helpers/dashboard';
+import {
+  IDashboardState,
+  ISerializableFilterOperations,
+  ISerializableInvestment,
+  ISerializableInvestmentOperation,
+  RootState,
+} from 'store/types';
+import {
+  toFilters,
+  toInvestment,
+  toOperation,
+  toSerializableFilters,
+  toSerializableInvestment,
+  toSerializableOperation,
+} from 'helpers/dashboard';
 
 // Investment
 export const addInvestment = createAsyncThunk<
-  [IInvestment, IInvestmentOperation],
-  IInvestment,
+  [ISerializableInvestment, ISerializableInvestmentOperation],
+  ISerializableInvestment,
   { state: RootState }>(
     ADD_INVESTMENT,
     async investment => {
-      const id = await db.investments.add(investment);
+      const id = await db.investments.add(toInvestment(investment));
       const operation = {
         investmentId: id,
         asset: investment.asset,
@@ -38,7 +51,7 @@ export const addInvestment = createAsyncThunk<
         amountBefore: 0,
         operation: InvestmentOperation.new,
       };
-      await db.operations.add(operation);
+      await db.operations.add(toOperation(operation));
       const updatedInvestment = { ...investment, id };
 
       return [updatedInvestment, operation];
@@ -57,16 +70,16 @@ export const removeInvestment = createAsyncThunk<
   );
 
 export const updateInvestment = createAsyncThunk<
-  IInvestmentOperation,
+  ISerializableInvestmentOperation,
   {
-    investment: IInvestment,
+    investment: ISerializableInvestment,
     amount: number,
-    date: Date
+    date: string
   },
   { state: RootState }>(
     UPDATE_INVESTMENT,
     async ({ investment, amount, date }) => {
-      const operation: IInvestmentOperation = {
+      const operation: ISerializableInvestmentOperation = {
         investmentId: investment.id!,
         asset: investment.asset,
         date,
@@ -84,33 +97,35 @@ export const updateInvestment = createAsyncThunk<
           },
         );
 
-        await db.operations.add(operation);
+        await db.operations.add(toOperation(operation));
       });
       return operation;
     },
   );
 
-export const selectInvestment = createAction<IInvestment>(SELECT_INVESTMENT);
+export const selectInvestment = createAction<ISerializableInvestment>(SELECT_INVESTMENT);
 
 // Operation
 export const selectInvestmentOperation = createAction<{
-  selectedInvestment: IInvestment, operation: InvestmentOperation
+  selectedInvestment: ISerializableInvestment, operation: InvestmentOperation
 }>(SELECT_INVESTMENT_OPERATION);
 
 export const filterInvestmentOperations = createAsyncThunk<
-  [IFilterOperations, IInvestmentOperation[]],
-  IFilterOperations,
+  [ISerializableFilterOperations, ISerializableInvestmentOperation[]],
+  ISerializableFilterOperations,
   { state: RootState }>(
     FILTER_INVESTMENT_OPERATIONS,
     async filters => {
-      const filtered = await db.operations.where('date').between(filters.from, filters.to).toArray();
-      return [filters, filtered];
+      const filter = toFilters(filters);
+      const filtered = await db.operations.where('date').between(filter.from, filter.to).toArray();
+      const serialized = filtered.map(x => toSerializableOperation(x));
+      return [filters, serialized];
     },
   );
 
 export const newInvestmentOperation = createAsyncThunk<
-  IInvestmentOperation,
-  IInvestmentOperation,
+  ISerializableInvestmentOperation,
+  ISerializableInvestmentOperation,
   { state: RootState }>(
     NEW_INVESTMENT_OPERATION,
     async operation => {
@@ -123,7 +138,7 @@ export const newInvestmentOperation = createAsyncThunk<
           },
         );
 
-        await db.operations.add(operation);
+        await db.operations.add(toOperation(operation));
       });
       return operation;
     },
@@ -147,29 +162,29 @@ export const exportDb = createAsyncThunk<Blob, void, { state: RootState }>(
 );
 
 export const loadFromDb = createAsyncThunk<
-  [IInvestment[], IFilterOperations, IInvestmentOperation[]],
+  [ISerializableInvestment[], ISerializableFilterOperations, ISerializableInvestmentOperation[]],
   void,
   { state: RootState }>(
     LOAD_FROM_DB,
     async () => {
-      const investments = await db.investments.toArray();
-      const filters = defaultFilter();
-      const operations = await db.operations.toArray();
+      const investments = (await db.investments.toArray()).map(x => toSerializableInvestment(x));
+      const filters = toSerializableFilters(defaultFilter());
+      const operations = (await db.operations.toArray()).map(x => toSerializableOperation(x));
       return [investments, filters, operations];
     },
   );
 
 export const importDb = createAsyncThunk<
-  [IInvestment[], IFilterOperations, IInvestmentOperation[]],
+  [ISerializableInvestment[], ISerializableFilterOperations, ISerializableInvestmentOperation[]],
   Blob,
   { state: RootState }>(
     IMPORT_DB,
     async dbBlob => {
       await importInto(db, dbBlob, { clearTablesBeforeImport: true });
-      const investments = await db.investments.toArray();
-      const filters = defaultFilter();
-      const operations = await db.operations.where('date')
-        .between(filters.from, filters.to).toArray();
+      const investments = (await db.investments.toArray()).map(x => toSerializableInvestment(x));
+      const filters = toSerializableFilters(defaultFilter());
+      const operations = (await db.operations.where('date')
+        .between(filters.from, filters.to).toArray()).map(x => toSerializableOperation(x));
 
       return [investments, filters, operations];
     },
@@ -190,11 +205,11 @@ const reducer = createReducer(initialState,
     builder
       .addCase(addInvestment.fulfilled, (state, action) => {
         const [investment, operation] = action.payload;
-        state.investments.push(toSerializableInvestment(investment));
-        state.operations.push(toSerializableOperation(operation));
+        state.investments.push(investment);
+        state.operations.push(operation);
       })
       .addCase(updateInvestment.fulfilled, (state, action) => {
-        const operation = toSerializableOperation(action.payload);
+        const operation = action.payload;
         const investmentIndex = state.investments.findIndex(x => x.id === operation.investmentId);
         state.investments[investmentIndex].amount = operation.amountAfter;
         state.investments[investmentIndex].date = operation.date;
@@ -205,10 +220,10 @@ const reducer = createReducer(initialState,
         state.operations = state.operations.filter(item => item.investmentId !== id);
       })
       .addCase(selectInvestment, (state, action) => {
-        state.selectedInvestment = toSerializableInvestment(action.payload);
+        state.selectedInvestment = action.payload;
       })
       .addCase(newInvestmentOperation.fulfilled, (state, action) => {
-        const operation = toSerializableOperation(action.payload);
+        const operation = action.payload;
         const investmentIndex = state.investments.findIndex(x => x.id === operation.investmentId);
         state.investments[investmentIndex].amount = operation.amountAfter;
         state.investments[investmentIndex].date = operation.date;
@@ -216,19 +231,19 @@ const reducer = createReducer(initialState,
       })
       .addCase(selectInvestmentOperation, (state, action) => {
         const { selectedInvestment, operation } = action.payload;
-        state.selectedInvestment = toSerializableInvestment(selectedInvestment);
+        state.selectedInvestment = selectedInvestment;
         state.operation = operation;
       })
       .addCase(filterInvestmentOperations.fulfilled, (state, action) => {
         const [filters, operations] = action.payload;
-        state.operationFilters = toSerializableFilters(filters);
-        state.operations = operations.map(x => toSerializableOperation(x));
+        state.operationFilters = filters;
+        state.operations = operations;
       })
       .addCase(importDb.fulfilled, (state, action) => {
         const [investments, filters, operations] = action.payload;
-        state.investments = investments.map(x => toSerializableInvestment(x));
-        state.operationFilters = toSerializableFilters(filters);
-        state.operations = operations.map(x => toSerializableOperation(x));
+        state.investments = investments;
+        state.operationFilters = filters;
+        state.operations = operations;
       })
       .addCase(removeDb.fulfilled, state => {
         state.investments = [];
@@ -243,11 +258,31 @@ const reducer = createReducer(initialState,
       })
       .addCase(loadFromDb.fulfilled, (state, action) => {
         const [investments, filters, operations] = action.payload;
-        state.investments = investments.map(x => toSerializableInvestment(x));
-        state.operationFilters = toSerializableFilters(filters);
-        state.operations = operations.map(x => toSerializableOperation(x));
+        state.investments = investments;
+        state.operationFilters = filters;
+        state.operations = operations;
       })
       .addDefaultCase(state => state);
   });
 
+// selectors
+export const selectDeserializedInvestments = createSelector<RootState, ISerializableInvestment[], IInvestment[]>(
+  state => state.dashboard.investments,
+  investments => investments.map(x => toInvestment(x)),
+);
+
+export const selectDeserializedSelectedInvestment = createSelector<RootState, ISerializableInvestment | null, IInvestment | null>(
+  state => state.dashboard.selectedInvestment,
+  selectedInvestment => (selectedInvestment ? toInvestment(selectedInvestment) : null),
+);
+
+export const selectDeserializedFilters = createSelector<RootState, ISerializableFilterOperations | null, IFilterOperations | null>(
+  state => state.dashboard.operationFilters,
+  selectedInvestment => (selectedInvestment ? toFilters(selectedInvestment) : null),
+);
+
+export const selectDeserializedOperations = createSelector<RootState, ISerializableInvestmentOperation[], IInvestmentOperation[]>(
+  state => state.dashboard.operations,
+  operations => operations.map(x => toOperation(x)),
+);
 export default reducer;

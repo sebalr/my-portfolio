@@ -10,6 +10,7 @@ import { FormEvent, ChangeEvent, useCallback, useState } from 'react';
 import { IInvestment } from 'common/state.interfaces';
 import { useAppDispatch } from 'store/hooks';
 import { updateInvestment } from 'components/Layout/Dashboard/dashboardReducer';
+import { toSerializableInvestment } from 'helpers/dashboard';
 
 interface IUpdateDialogProps {
   investment: IInvestment;
@@ -43,9 +44,9 @@ const UpdateInvestmentDialog = (props: IUpdateDialogProps) => {
 
   const updateInvestmentHandler = useCallback((event: FormEvent) => {
     event.preventDefault();
-    dispatch(updateInvestment({ investment, amount: amount as number, date }));
+    dispatch(updateInvestment({ investment: toSerializableInvestment(investment), amount: amount as number, date: date.toISOString() }));
     closeHandler();
-  }, [dispatch, closeHandler]);
+  }, [dispatch, closeHandler, investment, amount, date]);
 
   const assetName = investment?.asset.abbreviation
     ? `${investment?.asset.name} (${investment?.asset.abbreviation})`
@@ -70,6 +71,7 @@ const UpdateInvestmentDialog = (props: IUpdateDialogProps) => {
             change={dateChangeHandler}
           />
           <AdornmentInput
+            inputId="total-amount"
             type="number"
             fullWidth
             label="Amount"
